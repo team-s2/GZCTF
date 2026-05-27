@@ -437,6 +437,26 @@ public class KubernetesConfig
     public string KubeConfig { get; set; } = "kube-config.yaml";
     public string[]? AllowCidr { get; set; }
     public string[]? Dns { get; set; }
+
+    /// <summary>
+    /// Use in-cluster ServiceAccount config, ignore KubeConfig
+    /// </summary>
+    public bool UseInClusterConfig { get; set; }
+
+    /// <summary>
+    /// Use restricted ServiceAccount, skip auto-configuration (namespace, secrets, etc.)
+    /// </summary>
+    public bool UseRestrictedServiceAccount { get; set; }
+
+    /// <summary>
+    /// Manual ImagePullSecret name, overrides auto-generated registry secrets
+    /// </summary>
+    public string? AuthSecretName { get; set; }
+
+    /// <summary>
+    /// Schedule pods to a specific node
+    /// </summary>
+    public string? NodeName { get; set; }
 }
 
 public class RegistrySet<T> : Dictionary<string, T>

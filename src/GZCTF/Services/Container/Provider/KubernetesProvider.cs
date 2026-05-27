@@ -42,7 +42,11 @@ public class KubernetesProvider : IContainerProvider<Kubernetes, KubernetesMetad
 
         KubernetesClientConfiguration config;
 
-        if (!string.IsNullOrWhiteSpace(_kubernetesMetadata.Config.KubeConfig) &&
+        if (_kubernetesMetadata.Config.UseInClusterConfig)
+        {
+            config = KubernetesClientConfiguration.InClusterConfig();
+        }
+        else if (!string.IsNullOrWhiteSpace(_kubernetesMetadata.Config.KubeConfig) &&
             File.Exists(_kubernetesMetadata.Config.KubeConfig))
         {
             config = KubernetesClientConfiguration.BuildConfigFromConfigFile(_kubernetesMetadata.Config.KubeConfig);
@@ -85,6 +89,16 @@ public class KubernetesProvider : IContainerProvider<Kubernetes, KubernetesMetad
 
     private void InitKubernetes(RegistrySet<RegistryConfig> registries)
     {
+        // Support manual AuthSecretName override
+        if (!string.IsNullOrWhiteSpace(_kubernetesMetadata.Config.AuthSecretName))
+        {
+            _kubernetesMetadata.AuthSecretNames[string.Empty] = _kubernetesMetadata.Config.AuthSecretName;
+        }
+
+        // Skip auto-configuration when using restricted ServiceAccount
+        if (_kubernetesMetadata.Config.UseRestrictedServiceAccount)
+            return;
+
         if (_kubernetesClient.CoreV1.ListNamespace().Items
             .All(ns => ns.Metadata.Name != _kubernetesMetadata.Config.Namespace))
             _kubernetesClient.CoreV1.CreateNamespace(

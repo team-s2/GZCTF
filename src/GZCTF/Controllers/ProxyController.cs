@@ -29,7 +29,7 @@ public class ProxyController(
     TrafficRecorderRegistry trafficRegistry,
     IStringLocalizer<Program> localizer) : ControllerBase
 {
-    private const int BufferSize = 4096;
+    private const int BufferSize = 16384;
     private const uint ConnectionLimit = 32;
 
     private static readonly JsonSerializerOptions JsonOptions =

@@ -88,6 +88,7 @@ public class KubernetesManager : IContainerManager
                 DnsPolicy = "None",
                 DnsConfig = new() { Nameservers = options.Dns ?? ["223.5.5.5", "114.114.114.114"] },
                 EnableServiceLinks = false,
+                NodeName = string.IsNullOrWhiteSpace(options.NodeName) ? null : options.NodeName,
                 Containers =
                 [
                     new V1Container

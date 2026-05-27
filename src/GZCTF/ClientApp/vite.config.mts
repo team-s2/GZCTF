@@ -48,6 +48,7 @@ export default defineConfig(({ mode }) => {
       reportCompressedSize: true,
       rolldownOptions: {
         output: {
+          format: 'iife',
           hashCharacters: 'base36',
           chunkFileNames: 'static/[hash].js',
           assetFileNames: 'static/[hash].[ext]',
