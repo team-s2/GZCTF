@@ -41,6 +41,7 @@ import {
   mdiWeb,
   mdiWebCancel,
   mdiWebCheck,
+  mdiFlower,
 } from '@mdi/js'
 import { Icon } from '@mdi/react'
 import { useMemo } from 'react'
@@ -248,6 +249,16 @@ export const useChallengeCategoryLabelMap = () => {
             name: ChallengeCategory.Pentest,
             color: 'grape',
             colors: theme.colors['grape'],
+          },
+        ],
+        [
+          ChallengeCategory.Welcome,
+          {
+            desrc: t('challenge.category.welcome'),
+            icon: mdiFlower,
+            name: ChallengeCategory.Welcome,
+            color: 'pink',
+            colors: theme.colors['pink'],
           },
         ],
       ]),

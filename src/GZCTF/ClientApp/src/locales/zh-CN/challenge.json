@@ -32,7 +32,8 @@
     "ppc": "专业编程",
     "pwn": "二进制漏洞利用",
     "reverse": "逆向工程",
-    "web": "网络安全"
+    "web": "网络安全",
+    "welcome": "入门题目"
   },
   "content": {
     "already_solved": "该题目已被解出",

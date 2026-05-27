@@ -20,7 +20,7 @@ import { ScoreboardItemModalProps } from '@Components/ScoreboardItemModal'
 import { ScrollingText } from '@Components/ScrollingText'
 import { TeamRadarMap } from '@Components/charts/TeamRadarMap'
 import { useLanguage } from '@Utils/I18n'
-import { ChallengeInfo } from '@Api'
+import { ChallengeCategory, ChallengeInfo } from '@Api'
 import modalClasses from '@Styles/ScoreboardItemModal.module.css'
 import tableClasses from '@Styles/Table.module.css'
 
@@ -44,7 +44,7 @@ export const MobileScoreboardItemModal: FC<ScoreboardItemModalProps> = React.mem
 
   const indicator = useMemo(() => {
     if (!challenges) return []
-    return Object.keys(challenges).map((cate) => ({
+    return Object.keys(challenges).filter((cate) => cate !== ChallengeCategory.Welcome).map((cate) => ({
       name: cate,
       scoreSum: challenges[cate].reduce((sum, chal) => sum + (!chal.solved ? 0 : chal.score!), 0),
       max: 1,

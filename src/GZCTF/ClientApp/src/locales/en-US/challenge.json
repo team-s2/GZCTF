@@ -32,7 +32,8 @@
     "ppc": "Programming",
     "pwn": "Binary exploitation",
     "reverse": "Reverse engineering",
-    "web": "Web security"
+    "web": "Web security",
+    "welcome": "Welcome"
   },
   "content": {
     "already_solved": "This challenge has been solved",

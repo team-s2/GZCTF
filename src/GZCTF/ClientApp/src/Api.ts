@@ -113,6 +113,7 @@ export enum ChallengeCategory {
   AI = "AI",
   Pentest = "Pentest",
   OSINT = "OSINT",
+  Welcome = "Welcome",
 }
 
 export enum ParticipationStatus {

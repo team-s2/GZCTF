@@ -20,7 +20,7 @@ import { MemberContributionPieProps } from '@Components/charts/MemberContributio
 import { TeamRadarMap, TeamRadarMapProps } from '@Components/charts/TeamRadarMap'
 import { useLanguage } from '@Utils/I18n'
 import { BloodsTypes, BonusLabel } from '@Utils/Shared'
-import { ChallengeInfo, ScoreboardItem, ScoreboardModel, SubmissionType } from '@Api'
+import { ChallengeCategory, ChallengeInfo, ScoreboardItem, ScoreboardModel, SubmissionType } from '@Api'
 import modalClasses from '@Styles/ScoreboardItemModal.module.css'
 import tableClasses from '@Styles/Table.module.css'
 import { ScrollingText } from './ScrollingText'
@@ -39,7 +39,7 @@ function calculateScoreRadar(
 ): TeamRadarMapProps {
   const indicator =
     challenges &&
-    Object.keys(challenges).map((cate) => ({
+    Object.keys(challenges).filter((cate) => cate !== ChallengeCategory.Welcome).map((cate) => ({
       name: cate,
       scoreSum: challenges[cate].reduce((sum, chal) => sum + (!chal.solved ? 0 : chal.score!), 0),
       max: 1,
