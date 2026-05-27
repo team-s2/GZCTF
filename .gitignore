@@ -262,3 +262,8 @@ docs
 
 # Node package lock files (npm)
 **/package-lock.json
+
+# Devcontainer lock file
+.devcontainer/devcontainer-lock.json
+dotnet/
+.pnpm-store/
