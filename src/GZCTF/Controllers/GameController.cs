@@ -224,6 +224,17 @@ public class GameController(
         if (requiredInviteCode is not null && requiredInviteCode != model.InviteCode)
             return BadRequest(new RequestResponse(localizer[nameof(Resources.Program.Game_InvalidInvitationCode)]));
 
+        // =============== Validate email-domain matching ===============
+
+        var emailDomain = user!.Email?.Split('@').LastOrDefault();
+        if (emailDomain is not null)
+        {
+            var divName = div?.Name;
+            if ((emailDomain == "zju.edu.cn" && divName != "浙江大学") ||
+                (emailDomain == "sjtu.edu.cn" && divName != "上海交通大学"))
+                return BadRequest(new RequestResponse("邮箱与参赛组织不匹配"));
+        }
+
         // =============== Check and handle participation state ===============
 
         // Get existing participation for this team in this game

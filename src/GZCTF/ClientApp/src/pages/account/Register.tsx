@@ -140,7 +140,7 @@ const Register: FC = () => {
         required
         label={t('account.label.email')}
         type="email"
-        placeholder="ctf@example.com"
+        placeholder="请使用学校邮箱"
         w="100%"
         value={email}
         disabled={disabled}

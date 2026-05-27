@@ -85,7 +85,7 @@ const Recovery: FC = () => {
       <TextInput
         required
         label={t('account.label.email')}
-        placeholder="ctf@example.com"
+        placeholder="请使用学校邮箱"
         type="email"
         w="100%"
         value={email}

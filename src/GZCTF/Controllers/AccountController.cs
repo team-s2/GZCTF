@@ -1,4 +1,5 @@
 ﻿using System.Net.Mime;
+using System.Text.RegularExpressions;
 using GZCTF.Middlewares;
 using GZCTF.Models.Internal;
 using GZCTF.Models.Request.Account;
@@ -58,6 +59,10 @@ public class AccountController(
         if (!VerifyEmailDomain(model.Email))
             return BadRequest(new RequestResponse(localizer[nameof(Resources.Program.Account_AvailableEmailDomain),
                 accountPolicy.Value.EmailDomainList]));
+
+        if (model.Email!.Split('@')[1].Equals("zju.edu.cn", StringComparison.InvariantCulture) &&
+            !Regex.IsMatch(model.Email!.Split('@')[0], @"^\d+$"))
+            return BadRequest(new RequestResponse("浙大学生仅可使用学号邮箱，即 <学号>@zju.edu.cn"));
 
         var password = configService.DecryptApiData(model.Password);
         if (string.IsNullOrWhiteSpace(password))
@@ -561,8 +566,13 @@ public class AccountController(
     }
 
     private string GetEmailLink(string action, string token, string? email)
-        => $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/account/{action}?" +
-           $"token={token}&email={Codec.Base64.Encode(email)}";
+    {
+        if (email is not null && email.Split('@')[1].Equals("sjtu.edu.cn", StringComparison.InvariantCulture))
+            return $"https://zjuctf.0ops.sjtu.cn/account/{action}?" +
+                   $"token={token}&email={Codec.Base64.Encode(email)}";
+        return $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/account/{action}?" +
+               $"token={token}&email={Codec.Base64.Encode(email)}";
+    }
 
     private BadRequestObjectResult HandleIdentityError(IEnumerable<IdentityError> errors) =>
         BadRequest(new RequestResponse(errors.FirstOrDefault()?.Description ??
