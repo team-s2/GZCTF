@@ -296,7 +296,7 @@
           "label": "比赛标题"
         },
         "writeup_deadline": {
-          "description": "比赛结束后允许提交 Writeup 的小时数",
+          "description": "比赛结束后允许提交的小时数，-1 表示无需提交",
           "label": "Writeup 提交时限"
         },
         "writeup_instruction": "Writeup 提交说明",

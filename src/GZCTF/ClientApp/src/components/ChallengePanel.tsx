@@ -145,7 +145,7 @@ export const ChallengePanel: FC = () => {
   return (
     <>
       <Stack miw="10.5rem">
-        {game?.writeupRequired && (
+        {game?.writeupRequired && !dayjs(game.end).add(teamInfo.writeupDeadline ?? 0, 'hour').isAfter(dayjs()) && (
           <>
             <Button
               px="xs"

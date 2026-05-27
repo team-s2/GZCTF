@@ -79,7 +79,7 @@ const GameInfoEdit: FC = () => {
       setEnd(dayjs(gameSource.end))
 
       const wpddl = dayjs(gameSource.writeupDeadline).diff(gameSource.end, 'h')
-      setWpddl(wpddl < 0 ? 0 : wpddl)
+      setWpddl(wpddl < -1 ? -1 : wpddl)
     }
   }, [id, gameSource])
 
@@ -353,7 +353,7 @@ const GameInfoEdit: FC = () => {
               label={t('admin.content.games.info.writeup_deadline.label')}
               description={t('admin.content.games.info.writeup_deadline.description')}
               disabled={disabled}
-              min={0}
+              min={-1}
               required
               value={wpddl}
               onChange={(e) => setWpddl(getInputNumber(e))}
