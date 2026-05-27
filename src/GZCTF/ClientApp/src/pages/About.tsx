@@ -49,7 +49,7 @@ const About: FC = () => {
           <Stack align="center" gap={0}>
             <MainIcon size="5rem" className={classes.mainIcon} />
             <Title order={1} size="3.5rem" fw={800} ta="center" className={classes.mainTitle}>
-              GZ<span className={logoClasses.brand}>::</span>CTF
+              ZJU<span className={logoClasses.brand}>::</span>CTF
             </Title>
             <Text size="xl" fw={500} ta="center" c="dimmed" ff="monospace" mt="xs" className={classes.slogan}>
               &gt;&nbsp;{t('common.content.about.slogan')}
@@ -190,10 +190,10 @@ const About: FC = () => {
           </Group>
           <Flex direction="column" align="center" gap="sm">
             <Badge size="lg" variant="dot" color={valid ? 'green' : 'red'} className={classes.versionBadge}>
-              {valid ? `${tag}${shortSha}` : 'UNOFFICIAL'}
+              {valid ? `${tag}${shortSha}` : 'AAA modified'}
             </Badge>
             <Text size="xs" fw={400} c="gray" ta="center" ff="monospace">
-              {valid ? `Built at ${buildTime.format('YYYY-MM-DDTHH:mm:ssZ')}` : 'This release is not officially built'}
+              {valid ? `Built at ${buildTime.format('YYYY-MM-DDTHH:mm:ssZ')}` : 'This release is modified by AAA'}
             </Text>
           </Flex>
         </Stack>
@@ -212,6 +212,17 @@ const About: FC = () => {
               underline="hover"
             >
               @GZTimeWalker
+            </Anchor>
+            &nbsp;&amp;&nbsp;
+            <Anchor
+              href="https://zjusec.com/"
+              target="_blank"
+              c="dimmed"
+              size="sm"
+              fw={500}
+              underline="hover"
+            >
+              AAA
             </Anchor>
           </Text>
         </Center>

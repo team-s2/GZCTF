@@ -19,6 +19,10 @@ export const Copyright: FC<CopyrightProps> = ({ isMobile }) => {
       <Anchor href="https://github.com/GZTimeWalker" c="dimmed" size="sm" fw={500}>
         @GZTimeWalker
       </Anchor>
+      &nbsp;&amp;&nbsp;
+      <Anchor href="https://zjusec.com/" c="dimmed" size="sm" fw={500}>
+        AAA
+      </Anchor>
       ,&nbsp;All&nbsp;Rights&nbsp;Reserved.
     </Text>
   )

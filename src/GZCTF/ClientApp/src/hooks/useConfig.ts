@@ -86,43 +86,28 @@ export const ValidatedRepoMeta = () => {
 }
 
 const showBanner = () => {
-  const { sha, rawTag: tag, buildTime, repo, valid } = ValidatedRepoMeta()
-  const padding = ' '.repeat(45)
+  const { repo } = ValidatedRepoMeta()
+  const rst = '\x1b[0m'
+  const bold = '\x1b[1m'
+  const brand = '\x1b[38;2;4;202;171m'
 
-  const bannerClr = ['color: #4ccaaa', 'color: unset']
-  const textClr = ['font-weight: bold', 'font-weight: bold; color: #4ccaaa']
-  const badClr = ['font-weight: bold', 'font-weight: bold; color: #fe3030']
-
-  // GZCTF Banner Block
-  // Core licensed under AGPLv3; certain components under LicenseRef-GZCTF-Restricted.
-  // See NOTICE and LICENSE_ADDENDUM.txt for attribution & trademark guidance.
   const current = new Date().getFullYear()
 
   const banner = `
-  ██████╗ ███████╗           ██████╗████████╗███████╗
- ██╔════╝ ╚══███╔╝ %c ██╗██╗ %c ██╔════╝╚══██╔══╝██╔════╝
- ██║  ███╗  ███╔╝  %c ╚═╝╚═╝ %c ██║        ██║   █████╗
- ██║   ██║ ███╔╝   %c ██╗██╗ %c ██║        ██║   ██╔══╝
- ╚██████╔╝███████╗ %c ╚═╝╚═╝ %c ╚██████╗   ██║   ██║
-  ╚═════╝ ╚══════╝           ╚═════╝   ╚═╝   ╚═╝
-  ${padding}%c@ %c${valid ? tag : 'Unknown'}
+  ██████╗ ███████╗ ${brand}        ${rst}  ██████╗████████╗███████╗
+ ██╔════╝ ╚══███╔╝ ${brand} ██╗██╗ ${rst} ██╔════╝╚══██╔══╝██╔════╝
+ ██║  ███╗  ███╔╝  ${brand} ╚═╝╚═╝ ${rst} ██║        ██║   █████╗
+ ██║   ██║ ███╔╝   ${brand} ██╗██╗ ${rst} ██║        ██║   ██╔══╝
+ ╚██████╔╝███████╗ ${brand} ╚═╝╚═╝ ${rst} ╚██████╗   ██║   ██║
+  ╚═════╝ ╚══════╝ ${brand}        ${rst}  ╚═════╝   ╚═╝   ╚═╝
+`
 
-%cCopyright (C) 2022-${current}, GZTimeWalker, All rights reserved.
-
-%cLicense  : %cGNU Affero General Public License v3.0 (Core)
-%cLicense  : %cLicenseRef-GZCTF-Restricted (Restricted components)
-%cCommit   : %c${valid ? sha : 'Unofficial build version'}
-%cBuilt at : %c${buildTime.format('YYYY-MM-DDTHH:mm:ssZ')}
-%cIssues   : %c${repo}/issues
- `
-
-  // rewrite the show banner function with %c and css
   console.log(
-    banner,
-    ...bannerClr.concat(bannerClr, bannerClr, bannerClr),
-    ...(valid ? textClr : badClr),
-    'font-weight: bold',
-    ...textClr.concat(textClr, valid ? textClr : badClr, textClr, textClr)
+    `${banner}` +
+      `\n${bold}Copyright (C) 2022-${current}, GZTimeWalker & AAA, All rights reserved.${rst}` +
+      `\n${bold}License  : ${brand}GNU Affero General Public License v3.0${rst}` +
+      `\n${bold}Issues   : ${repo}/issues` +
+      '\n'
   )
 }
 

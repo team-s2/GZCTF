@@ -230,14 +230,14 @@ public class GlobalConfig
     /// <summary>
     /// Default site description
     /// </summary>
-    public const string DefaultDescription = "GZ::CTF is an open source CTF platform";
+    public const string DefaultDescription = "ZJU::CTF is a CTF platform powered by GZ::CTF";
 
     /// <summary>
     /// Platform prefix name
     /// </summary>
     [CacheFlush(CacheKey.Index)]
     [CacheFlush(CacheKey.ClientConfig)]
-    public string Title { get; set; } = "GZ";
+    public string Title { get; set; } = "ZJU";
 
     /// <summary>
     /// Platform slogan
@@ -300,7 +300,7 @@ public partial class ClientConfig
     /// <summary>
     /// Platform prefix name
     /// </summary>
-    public string Title { get; set; } = "GZ";
+    public string Title { get; set; } = "ZJU";
 
     /// <summary>
     /// Platform slogan
