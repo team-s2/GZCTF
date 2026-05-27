@@ -239,10 +239,13 @@ _Pvt_Extensions
 docs
 
 **/appsettings.json
+**/appsettings.json.bak
 **/appsettings.*.json
 !**/appsettings.Template.json
 !**/GZCTF.AppHost/appsettings*.json
 **/kube-config.yaml
+**/docker-compose.yml
+**/k3s.yaml
 
 .VSCodeCounter/*
 .idea/**

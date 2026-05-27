@@ -70,7 +70,7 @@ export const WithNavBar: FC<WithNavBarProps> = ({
               <LoadingOverlay visible={isLoading ?? false} overlayProps={DEFAULT_LOADING_OVERLAY} />
               {withHeader && <IconHeader px={isMobile ? '2%' : '10%'} sticky={stickyHeader} />}
               <Box
-                w={width ?? (isMobile ? '96%' : '80%')}
+                w={width ?? (isMobile ? '96%' : '100%')}
                 style={{
                   zIndex: 20,
                 }}
