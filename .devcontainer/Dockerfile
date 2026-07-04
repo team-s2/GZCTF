@@ -12,19 +12,6 @@ EOF
 
 RUN <<EOF
 set -xe
-# https://code.claude.com/docs/en/quickstart
-ARCH=${TARGETARCH:-$(dpkg --print-architecture)}
-case "${ARCH}" in
-  amd64) PLATFORM="linux-x64" ;;
-  arm64) PLATFORM="linux-arm64" ;;
-esac
-version=$(curl -fsSL https://downloads.claude.ai/claude-code-releases/latest)
-curl -fsSL -o /usr/local/bin/claude "https://downloads.claude.ai/claude-code-releases/${version}/${PLATFORM}/claude"
-chmod 755 /usr/local/bin/claude
-EOF
-
-RUN <<EOF
-set -xe
 # https://opencode.ai/download
 ARCH=${TARGETARCH:-$(dpkg --print-architecture)}
 case "${ARCH}" in
