@@ -18,7 +18,8 @@ const RepoMeta = {
   rawTag: import.meta.env.VITE_APP_GIT_NAME ?? 'unknown',
   timestamp: import.meta.env.VITE_APP_BUILD_TIMESTAMP ?? '',
   buildTime: import.meta.env.DEV ? dayjs() : dayjs(import.meta.env.VITE_APP_BUILD_TIMESTAMP),
-  repo: 'https://github.com/GZTimeWalker/GZCTF',
+  repo: 'https://github.com/team-s2/GZCTF',
+  upstreamRepo: 'https://github.com/GZTimeWalker/GZCTF',
 }
 
 export const useConfig = () => {

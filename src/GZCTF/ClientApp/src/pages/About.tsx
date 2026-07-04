@@ -19,16 +19,18 @@ import contributorsData from 'virtual:contributors'
 import { WithNavBar } from '@Components/WithNavbar'
 import { MainIcon } from '@Components/icon/MainIcon'
 import { useIsMobile } from '@Utils/ThemeOverride'
-import { ValidatedRepoMeta } from '@Hooks/useConfig'
+import { useConfig, ValidatedRepoMeta } from '@Hooks/useConfig'
 import { usePageTitle } from '@Hooks/usePageTitle'
 import classes from '@Styles/About.module.css'
 import logoClasses from '@Styles/LogoHeader.module.css'
 
 const About: FC = () => {
-  const { repo, valid, rawTag: tag, sha, buildTime } = ValidatedRepoMeta()
+  const { repo, upstreamRepo, valid, rawTag: tag, sha, buildTime } = ValidatedRepoMeta()
+  const { config } = useConfig()
   const { t } = useTranslation()
   const theme = useMantineTheme()
   const shortSha = `#${sha.substring(0, 8)}`
+  const currentYear = new Date().getFullYear()
 
   const isMobile = useIsMobile()
 
@@ -52,7 +54,7 @@ const About: FC = () => {
               ZJU<span className={logoClasses.brand}>::</span>CTF
             </Title>
             <Text size="xl" fw={500} ta="center" c="dimmed" ff="monospace" mt="xs" className={classes.slogan}>
-              &gt;&nbsp;{t('common.content.about.slogan')}
+              &gt;&nbsp;{config?.slogan ?? 'Hack for fun not for profit'}
               <Text span className={classes.blink}>
                 _
               </Text>
@@ -102,6 +104,20 @@ const About: FC = () => {
                   className={classes.resourceLink}
                 >
                   {t('common.content.about.repository')}
+                </Anchor>
+                <Text span size="sm" c="dimmed">
+                  |
+                </Text>
+                <Anchor
+                  href={upstreamRepo}
+                  target="_blank"
+                  c={theme.primaryColor}
+                  size="md"
+                  fw={500}
+                  underline="hover"
+                  className={classes.resourceLink}
+                >
+                  {t('common.content.about.upstream_repository')}
                 </Anchor>
               </Group>
               <Group gap="sm" justify="center" align="center">
@@ -190,10 +206,12 @@ const About: FC = () => {
           </Group>
           <Flex direction="column" align="center" gap="sm">
             <Badge size="lg" variant="dot" color={valid ? 'green' : 'red'} className={classes.versionBadge}>
-              {valid ? `${tag}${shortSha}` : 'AAA modified'}
+              {valid ? `${tag}${shortSha}` : 'UNOFFICIAL'}
             </Badge>
             <Text size="xs" fw={400} c="gray" ta="center" ff="monospace">
-              {valid ? `Built at ${buildTime.format('YYYY-MM-DDTHH:mm:ssZ')}` : 'This release is modified by AAA'}
+              {valid
+                ? `Built at ${buildTime.format('YYYY-MM-DDTHH:mm:ssZ')}, modified by AAA`
+                : 'This release is not officially built'}
             </Text>
           </Flex>
         </Stack>
@@ -201,7 +219,7 @@ const About: FC = () => {
         <Center>
           <Text size="sm" fw={400} c="dimmed" ta="center" maw="100%" className={classes.copyright}>
             Copyright&nbsp;©&nbsp;
-            <span style={{ whiteSpace: 'nowrap' }}>2022-now</span>
+            <span style={{ whiteSpace: 'nowrap' }}>2022-{currentYear}</span>
             &nbsp;
             <Anchor
               href="https://github.com/GZTimeWalker"

@@ -22,6 +22,7 @@
       "contributors": "Contribuyentes",
       "documentation": "Documentación Oficial",
       "repository": "Repositorio GitHub",
+      "upstream_repository": "Repositorio upstream",
       "resources": "Recursos",
       "slogan": "Hackea por diversión, sin ánimo de lucro",
       "version": "Versión"

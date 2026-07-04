@@ -22,6 +22,7 @@
       "contributors": "Contributeurs",
       "documentation": "Documentation Officielle",
       "repository": "Dépôt GitHub",
+      "upstream_repository": "Dépôt amont",
       "resources": "Ressources",
       "slogan": "Hack for fun not for profit",
       "version": "Version"

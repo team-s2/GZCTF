@@ -22,6 +22,7 @@
       "contributors": "Người đóng góp",
       "documentation": "Tài liệu chính thức",
       "repository": "Kho GitHub",
+      "upstream_repository": "Kho upstream",
       "resources": "Tài nguyên",
       "slogan": "Hack cho vui, không vì lợi nhuận",
       "version": "Phiên bản"

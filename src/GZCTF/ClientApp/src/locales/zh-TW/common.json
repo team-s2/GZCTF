@@ -22,6 +22,7 @@
       "contributors": "貢獻者",
       "documentation": "官方文檔",
       "repository": "GitHub 倉庫",
+      "upstream_repository": "上游倉庫",
       "resources": "相關資源",
       "slogan": "Hack for fun not for profit",
       "version": "版本資訊"

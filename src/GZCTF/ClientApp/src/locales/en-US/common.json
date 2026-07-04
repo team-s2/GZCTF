@@ -22,6 +22,7 @@
       "contributors": "Contributors",
       "documentation": "Official Documentation",
       "repository": "GitHub Repository",
+      "upstream_repository": "Upstream Repository",
       "resources": "Resources",
       "slogan": "Hack for fun not for profit",
       "version": "Version"

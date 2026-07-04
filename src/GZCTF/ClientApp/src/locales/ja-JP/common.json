@@ -22,6 +22,7 @@
       "contributors": "貢献者",
       "documentation": "公式ドキュメント",
       "repository": "GitHub リポジトリ",
+      "upstream_repository": "上流リポジトリ",
       "resources": "リソース",
       "slogan": "Hack for fun not for profit",
       "version": "バージョン"
