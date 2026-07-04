@@ -267,3 +267,5 @@ docs
 .devcontainer/devcontainer-lock.json
 dotnet/
 .pnpm-store/
+.codex/
+.opencode/

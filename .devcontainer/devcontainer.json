@@ -5,7 +5,11 @@
     "build": {
         "dockerfile": "Dockerfile"
     },
-    "workspaceFolder": "/workspaces",
+    "containerEnv": {
+        // persist configs under workspace
+        "OPENCODE_CONFIG_DIR": "${containerWorkspaceFolder}/.opencode",
+        "CODEX_HOME": "${containerWorkspaceFolder}/.codex"
+    },
     // Features to add to the dev container. More info: https://containers.dev/features.
     "features": {
         "ghcr.io/devcontainers/features/node:2": {},
