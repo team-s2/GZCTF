@@ -16,23 +16,11 @@ namespace GZCTF.Extensions;
 
 public static class HandlerExtension
 {
-    private const string CspTemplatePrefix = "default-src 'strict-dynamic' 'nonce-";
-
-    private const string CspTemplateSuffix = "' 'unsafe-inline' http: https:; " +
-                                             "style-src 'self' 'unsafe-inline'; img-src * 'self' data: blob:; " +
-                                             "font-src * 'self' data:; object-src 'none'; frame-src * https:; " +
-                                             "connect-src 'self' http://127.0.0.1:*; base-uri 'none';";
-
-    private static readonly int CspHeaderLength = CspTemplatePrefix.Length + 12 + CspTemplateSuffix.Length;
-
-    private static string GetContentSecurityPolicy(ReadOnlySpan<char> nonce)
-    {
-        var builder = new StringBuilder(CspHeaderLength);
-        builder.Append(CspTemplatePrefix);
-        builder.Append(nonce);
-        builder.Append(CspTemplateSuffix);
-        return builder.ToString();
-    }
+    private const string ContentSecurityPolicy =
+        "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://webvpn.zju.edu.cn; " +
+        "style-src 'self' 'unsafe-inline'; img-src * 'self' data: blob:; " +
+        "font-src * 'self' data:; object-src 'none'; frame-src * https:; " +
+        "connect-src 'self' http://127.0.0.1:*; base-uri 'none';";
 
     private static readonly DistributedCacheEntryOptions
         StaticCacheOptions = new() { SlidingExpiration = TimeSpan.FromDays(7) };
@@ -211,7 +199,7 @@ public static class HandlerExtension
         Span<char> nonce = stackalloc char[12];
         RandomNumberGenerator.GetItems(charSet, nonce);
 
-        context.Response.Headers.ContentSecurityPolicy = GetContentSecurityPolicy(nonce);
+        context.Response.Headers.ContentSecurityPolicy = ContentSecurityPolicy;
         context.Response.Headers.CacheControl = NoCacheHeaderValue;
         builder.Replace("%nonce%", nonce);
 
