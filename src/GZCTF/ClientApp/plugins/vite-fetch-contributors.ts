@@ -7,7 +7,7 @@ export function fetchContributors(): Plugin {
     name: 'fetch-contributors',
     async buildStart() {
       try {
-        const response = await fetch('https://api.github.com/repos/GZTimeWalker/GZCTF/contributors')
+        const response = await fetch('https://api.github.com/repos/team-s2/GZCTF/contributors')
         if (!response.ok) {
           console.warn('Failed to fetch contributors from GitHub')
           return
