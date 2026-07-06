@@ -227,9 +227,9 @@ public class GameController(
         // =============== Validate email-domain matching ===============
 
         var emailDomain = user!.Email?.Split('@').LastOrDefault();
-        if (emailDomain is not null)
+        if (div is not null && emailDomain is not null)
         {
-            var divName = div?.Name;
+            var divName = div.Name;
             if ((emailDomain == "zju.edu.cn" && divName != "浙江大学") ||
                 (emailDomain == "sjtu.edu.cn" && divName != "上海交通大学"))
                 return BadRequest(new RequestResponse("邮箱与参赛组织不匹配"));
