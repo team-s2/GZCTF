@@ -1,6 +1,6 @@
 .card {
-  height: 25vh;
-  max-height: 300px;
+  width: 100%;
+  aspect-ratio: var(--game-poster-aspect-ratio);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -13,6 +13,12 @@
 }
 
 .title {
+  width: calc(100% + var(--mantine-spacing-md) * 2);
+  margin-right: calc(var(--mantine-spacing-md) * -1);
+  margin-bottom: calc(var(--mantine-spacing-md) * -1);
+  margin-left: calc(var(--mantine-spacing-md) * -1);
+  padding: 4px var(--mantine-spacing-md) calc(4px + var(--mantine-spacing-md));
+  background: var(--slide-title-background);
   font-weight: bold;
   line-height: 1.2;
   font-size: 1.5rem;

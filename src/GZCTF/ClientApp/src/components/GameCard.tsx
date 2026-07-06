@@ -32,6 +32,8 @@ export const GameColorMap = new Map<GameStatus, MantineColor>([
   [GameStatus.Ended, 'blue'],
 ])
 
+export const GAME_POSTER_ASPECT_RATIO = '771 / 387'
+
 interface GameCardProps {
   game: BasicGameInfoModel
 }
@@ -51,7 +53,7 @@ export const GameCard: FC<GameCardProps> = ({ game, ...others }) => {
   return (
     <Card {...others} shadow="sm" component={Link} to={`/games/${game.id}`} classNames={{ root: misc.hoverCard }}>
       <Card.Section>
-        <BackgroundImage src={poster ?? ''} h="12rem" w="100%" pos="relative">
+        <BackgroundImage src={poster ?? ''} w="100%" pos="relative" style={{ aspectRatio: GAME_POSTER_ASPECT_RATIO }}>
           {!poster && (
             <Center h="100%">
               <Icon path={mdiFlagOutline} size={4} color={theme.colors.gray[5]} />

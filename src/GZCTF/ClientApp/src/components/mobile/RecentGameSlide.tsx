@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import { GameColorMap, GameStatus } from '@Components/GameCard'
+import { GAME_POSTER_ASPECT_RATIO, GameColorMap, GameStatus } from '@Components/GameCard'
 import { RecentGameProps } from '@Components/RecentGame'
 import { useForeground } from '@Hooks/useForeground'
 import { getGameStatus } from '@Hooks/useGame'
@@ -19,6 +19,12 @@ export const RecentGameSlide: FC<RecentGameProps> = ({ game, ...others }) => {
   const duration = status === GameStatus.OnGoing ? endTime.diff(dayjs(), 'h') : endTime.diff(startTime, 'h')
 
   const titleColor = useForeground(poster)
+  const titleBackground =
+    titleColor === 'black'
+      ? 'rgba(255, 255, 255, 0.72)'
+      : titleColor === 'white'
+        ? 'rgba(0, 0, 0, 0.48)'
+        : 'light-dark(rgba(255, 255, 255, 0.72), rgba(0, 0, 0, 0.48))'
 
   return (
     <Paper
@@ -28,6 +34,8 @@ export const RecentGameSlide: FC<RecentGameProps> = ({ game, ...others }) => {
       shadow="md"
       p="md"
       __vars={{
+        '--game-poster-aspect-ratio': GAME_POSTER_ASPECT_RATIO,
+        '--slide-title-background': titleBackground,
         '--slide-image': `url(${poster})`,
         '--slide-title-color': titleColor,
       }}
