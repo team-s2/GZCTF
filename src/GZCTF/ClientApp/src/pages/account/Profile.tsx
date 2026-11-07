@@ -20,14 +20,16 @@ import { Dropzone } from '@mantine/dropzone'
 import { notifications, showNotification, updateNotification } from '@mantine/notifications'
 import { mdiCheck, mdiClose } from '@mdi/js'
 import { Icon } from '@mdi/react'
-import { FC, useEffect, useState } from 'react'
+import { FC, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
+import { PasskeyModal } from '@Components/PasskeyModal'
 import { PasswordChangeModal } from '@Components/PasswordChangeModal'
 import { WithNavBar } from '@Components/WithNavbar'
 import { showErrorMsg, tryGetErrorMsg } from '@Utils/Shared'
 import { IMAGE_MIME_TYPES } from '@Utils/Shared'
 import { useIsMobile } from '@Utils/ThemeOverride'
 import { usePageTitle } from '@Hooks/usePageTitle'
+import { useSyncOnChange } from '@Hooks/useSyncOnChange'
 import { useUser } from '@Hooks/useUser'
 import api, { ProfileUpdateModel } from '@Api'
 import misc from '@Styles/Misc.module.css'
@@ -49,6 +51,7 @@ const Profile: FC = () => {
 
   const [mailEditOpened, setMailEditOpened] = useState(false)
   const [pwdChangeOpened, setPwdChangeOpened] = useState(false)
+  const [passkeysOpened, setPasskeysOpened] = useState(false)
 
   const [email, setEmail] = useState('')
 
@@ -58,7 +61,7 @@ const Profile: FC = () => {
 
   usePageTitle(t('account.title.profile'))
 
-  useEffect(() => {
+  useSyncOnChange([user], () => {
     setProfile({
       userName: user?.userName,
       bio: user?.bio,
@@ -66,7 +69,7 @@ const Profile: FC = () => {
       phone: user?.phone,
       realName: user?.realName,
     })
-  }, [user])
+  })
 
   const onChangeAvatar = async () => {
     if (!avatarFile) return
@@ -229,6 +232,9 @@ const Profile: FC = () => {
               </Button>
             </Grid.Col>
           </Grid>
+          <Button fullWidth mt="sm" variant="light" onClick={() => setPasskeysOpened(true)}>
+            {t('account.passkey.title')}
+          </Button>
         </Box>
       </Stack>
     </>
@@ -253,6 +259,7 @@ const Profile: FC = () => {
         onClose={() => setPwdChangeOpened(false)}
         title={t('account.button.change_password')}
       />
+      <PasskeyModal opened={passkeysOpened} onClose={() => setPasskeysOpened(false)} userId={user?.userId} />
 
       <Modal opened={mailEditOpened} onClose={() => setMailEditOpened(false)} title={t('account.button.update_email')}>
         <Stack>

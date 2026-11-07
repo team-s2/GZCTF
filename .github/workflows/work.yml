@@ -18,22 +18,24 @@ jobs:
     defaults:
       run:
         working-directory: src/GZCTF
+    env:
+      SixLaborsLicenseKey: ${{ secrets.SIXLABORS_LICENSE }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
           global-json-file: src/global.json
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: latest
 
       - uses: pnpm/action-setup@v6
         name: Install pnpm
         with:
-          version: 11
+          version: latest
 
       - name: Restore dependencies
         run: dotnet restore
@@ -49,7 +51,6 @@ jobs:
 
       - name: Prebuild project
         run: |
-          npm i -g pnpm
           dotnet build "GZCTF.csproj" -c Release -o build
 
       - name: Publish project
@@ -104,8 +105,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           package: gzctf/gzctf
-          use-regex: true
-          exclude-tags: "^latest$|^develop$|v\\d+(\\.\\d+){0,2}|^work$"
+          exclude-tags: latest,develop,work,v*
           validate: true
           dry-run: false
           delete-untagged: true

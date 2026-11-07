@@ -379,7 +379,8 @@ public static class ContainerHelper
             try
             {
                 var inspection = await dockerClient.Containers.InspectContainerAsync(containerId);
-                var state = inspection.State;
+                var state = inspection.State ?? throw new InvalidOperationException(
+                    $"Docker container '{containerId}' inspection returned no state");
 
                 output.WriteLine(
                     $"  Attempt {attempt + 1}/{MaxAttempts}: Running={state.Running}, Status={state.Status}");
@@ -405,7 +406,7 @@ public static class ContainerHelper
                     await Task.Delay(DelayMs);
                 }
             }
-            catch (Exception e) when (!(e is InvalidOperationException))
+            catch (Exception e) when (e is not InvalidOperationException)
             {
                 output.WriteLine($"⚠️ Error checking container status: {e.Message}");
                 if (attempt < MaxAttempts - 1)

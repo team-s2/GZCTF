@@ -18,22 +18,24 @@ jobs:
     name: Run Tests (Local Mode)
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      SixLaborsLicenseKey: ${{ secrets.SIXLABORS_LICENSE }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
           global-json-file: src/global.json
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: latest
 
       - uses: pnpm/action-setup@v6
         name: Install pnpm
         with:
-          version: 11
+          version: latest
 
       - name: Restore dependencies
         working-directory: src
@@ -76,7 +78,7 @@ jobs:
           retention-days: 7
 
       - name: Unit Test Report
-        uses: dorny/test-reporter@v2
+        uses: dorny/test-reporter@v3
         if: always()
         with:
           name: Unit Test Results
@@ -84,7 +86,7 @@ jobs:
           reporter: dotnet-trx
 
       - name: Integration Test Report
-        uses: dorny/test-reporter@v2
+        uses: dorny/test-reporter@v3
         if: always()
         with:
           name: Integration Test Results (Local Mode)
@@ -105,22 +107,24 @@ jobs:
     name: Run Tests (Cloud Mode)
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      SixLaborsLicenseKey: ${{ secrets.SIXLABORS_LICENSE }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
           global-json-file: src/global.json
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: latest
 
       - uses: pnpm/action-setup@v6
         name: Install pnpm
         with:
-          version: 11
+          version: latest
 
       - name: Restore dependencies
         working-directory: src
@@ -149,10 +153,10 @@ jobs:
           retention-days: 7
 
       - name: Integration Test Report (Cloud Mode)
-        uses: dorny/test-reporter@v2
+        uses: dorny/test-reporter@v3
         if: always()
         with:
-          name: Integration Test Results (Cloud Mode - K3s + MinIO)
+          name: Integration Test Results (Cloud Mode - K3s + RustFS)
           path: src/GZCTF.Integration.Test/**/integration-test-results-cloud.trx
           reporter: dotnet-trx
 
@@ -171,7 +175,7 @@ jobs:
     if: always()
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Download coverage artifacts (local)
         uses: actions/download-artifact@v8
@@ -188,7 +192,7 @@ jobs:
           path: coverage-cloud
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: |

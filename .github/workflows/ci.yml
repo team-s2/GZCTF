@@ -21,22 +21,24 @@ jobs:
     defaults:
       run:
         working-directory: src/GZCTF
+    env:
+      SixLaborsLicenseKey: ${{ secrets.SIXLABORS_LICENSE }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
           global-json-file: src/global.json
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: latest
 
       - uses: pnpm/action-setup@v6
         name: Install pnpm
         with:
-          version: 11
+          version: latest
 
       - name: Get current date time
         id: datetime
@@ -80,13 +82,6 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Login to Aliyun Container Registry
-        uses: docker/login-action@v4
-        with:
-          registry: registry.cn-shanghai.aliyuncs.com
-          username: ${{ secrets.ALIYUN_USER }}
-          password: ${{ secrets.ALIYUN_PASSWORD }}
-
       - name: Docker metadata action
         uses: docker/metadata-action@v6
         id: meta
@@ -94,7 +89,6 @@ jobs:
           images: |
             gztime/gzctf
             ghcr.io/${{ github.repository }}/gzctf
-            registry.cn-shanghai.aliyuncs.com/gztime/gzctf
           flavor: |
             latest=${{ env.RELEASE }}
           tags: |
@@ -126,8 +120,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           package: gzctf/gzctf
-          use-regex: true
-          exclude-tags: "^latest$|^develop$|v\\d+(\\.\\d+){0,2}|^work$"
+          exclude-tags: latest,develop,work,v*
           validate: true
           dry-run: false
           delete-untagged: true
