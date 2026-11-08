@@ -28,6 +28,7 @@ Hills are torn down when the game ends or the challenge is disabled. Scores are 
 Each round, at a jittered time inside the tick, the engine runs one check per hill:
 
 1. **Functional check** in a short-lived container or pod on the hill's network. A custom image (`GameChallenge.KoHCheckerImage`) receives `GZCTF_ACTION`, `GZCTF_TARGET_IP`, `GZCTF_TARGET_PORT`, `GZCTF_ROUND` and `GZCTF_CHALLENGE_ID`, and reports through its exit code. Without an image, a built-in `nc -z` TCP probe is used, which can only report Ok or Offline.
+   On Kubernetes, the `gzctf-network-koh-checker` network policy limits checker pods to challenge pods in the same namespace, so a checker cannot reach the rest of the cluster or the internet.
 2. **Marker read** of `/koh/king`, trimmed and matched against the tokens of the current window. On Docker this uses the archive API, so the image needs no tools. On Kubernetes it execs in the pod, so the image needs `sh`, `head`, `base64` and `tr`.
 3. **One `KoHControlResult`** per hill and round:
 

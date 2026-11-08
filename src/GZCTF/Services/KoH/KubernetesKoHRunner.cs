@@ -71,9 +71,9 @@ public sealed class KubernetesKoHRunner(
                 Labels = new Dictionary<string, string>
                 {
                     ["gzctf.gzti.me/ResourceId"] = name,
-                    ["gzctf.role"] = "koh-checker",
-                    // Lets the checker reach the hill regardless of the hill's own network mode
-                    ["gzctf.gzti.me/NetworkMode"] = "open"
+                    // Selected by the checker network policy. It must not carry the NetworkMode
+                    // label: the open policy blocks the cluster CIDRs, which is where the hill is.
+                    [CheckerRoleLabel] = CheckerRole
                 }
             },
             Spec = new()

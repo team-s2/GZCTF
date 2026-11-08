@@ -42,6 +42,8 @@ internal static class KoHRunnerConstants
     public const string MarkerPath = "/koh/king";
     public const int MaxMarkerBytes = 4096;
     public const string ProbeImage = "alpine:3.21";
+    public const string CheckerRoleLabel = "gzctf.role";
+    public const string CheckerRole = "koh-checker";
     public const int MaxErrorLength = 4096;
     public static readonly TimeSpan CheckTimeout = TimeSpan.FromSeconds(30);
 
