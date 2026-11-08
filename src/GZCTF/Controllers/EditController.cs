@@ -40,6 +40,7 @@ public class EditController(
     GameExportService exportService,
     GameImportService importService,
     IDivisionRepository divisionRepository,
+    IKoHRepository kohRepository,
     IStringLocalizer<Program> localizer) : Controller
 {
     /// <summary>
@@ -178,6 +179,29 @@ public class EditController(
                 StatusCodes.Status404NotFound));
 
         return Ok(GameInfoModel.FromGame(game));
+    }
+
+    /// <summary>
+    /// Get King of the Hill State
+    /// </summary>
+    /// <remarks>
+    /// Every hill of the game and the hold-points leaderboard, requires administrator privileges
+    /// </remarks>
+    /// <param name="id"></param>
+    /// <param name="token"></param>
+    /// <response code="200">Successfully retrieved the state</response>
+    [HttpGet("Games/{id:int}/KoH/State")]
+    [ProducesResponseType(typeof(KoHAdminStateModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(RequestResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> KoHState([FromRoute] int id, CancellationToken token)
+    {
+        var game = await gameRepository.GetGameById(id, token);
+
+        if (game is null)
+            return NotFound(new RequestResponse(localizer[nameof(Resources.Program.Game_NotFound)],
+                StatusCodes.Status404NotFound));
+
+        return Ok(await kohRepository.GetAdminState(game, token));
     }
 
     /// <summary>

@@ -86,6 +86,9 @@ public partial class KoHScoreboardModel
 
     [Required]
     public List<KoHTeamScoreRow> Teams { get; set; } = [];
+
+    [Required]
+    public int TickSeconds { get; set; }
 }
 
 [MemoryPackable]
@@ -103,6 +106,9 @@ public partial class KoHScoreboardHill
 
     [Required]
     public int LastRefreshRound { get; set; }
+
+    [Required]
+    public ChallengeCategory Category { get; set; }
 }
 
 [MemoryPackable]
@@ -127,6 +133,8 @@ public partial class KoHTeamScoreRow
     /// </summary>
     [Required]
     public List<KoHHillScore> Hills { get; set; } = [];
+
+    public string? Avatar { get; set; }
 }
 
 [MemoryPackable]
@@ -152,6 +160,65 @@ public partial class KoHHillScore
 
     [Required]
     public bool IsCurrentHolder { get; set; }
+
+    /// <summary>
+    /// Ticks that cost this team a broken-hill penalty
+    /// </summary>
+    [Required]
+    public int BrokenTicks { get; set; }
+}
+
+/// <summary>
+/// Admin view of every hill of a game and the hold-points leaderboard
+/// </summary>
+public class KoHAdminStateModel
+{
+    [Required]
+    public int LatestRound { get; set; }
+
+    [Required]
+    public int RefreshTicks { get; set; }
+
+    [Required]
+    public int TickSeconds { get; set; }
+
+    [Required]
+    public double HoldPointsPerTick { get; set; }
+
+    /// <summary>
+    /// Every hill of the game, including disabled ones
+    /// </summary>
+    [Required]
+    public List<KoHAdminHillModel> Hills { get; set; } = [];
+
+    [Required]
+    public List<KoHTeamScoreRow> Teams { get; set; } = [];
+}
+
+public class KoHAdminHillModel
+{
+    [Required]
+    public int ChallengeId { get; set; }
+
+    [Required]
+    public string Title { get; set; } = string.Empty;
+
+    [Required]
+    public bool IsEnabled { get; set; }
+
+    public string? ContainerIp { get; set; }
+
+    public int? ContainerPort { get; set; }
+
+    /// <summary>
+    /// Last functional verdict: Ok, Mumble, Offline, InternalError or null
+    /// </summary>
+    public string? LastCheckStatus { get; set; }
+
+    public string? CurrentHolderTeamName { get; set; }
+
+    [Required]
+    public int LastRefreshRound { get; set; }
 }
 
 /// <summary>

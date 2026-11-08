@@ -322,6 +322,25 @@
           "label": "需要 Writeup"
         }
       },
+      "koh": {
+        "empty": {
+          "description": "向此比赛添加山丘之王题目后，可在此处管理。",
+          "title": "没有山丘之王题目"
+        },
+        "enabled": "启用",
+        "endpoint": "地址",
+        "health": "状态",
+        "hill": "山头",
+        "king": "当前占领者",
+        "last_reset": "上次重置",
+        "leaderboard": "占领得分榜",
+        "no_container": "无容器",
+        "no_king": "无人占领",
+        "no_scores": "暂无占领得分。",
+        "round": "第 {{round}} 轮",
+        "summary": "每 tick {{seconds}} 秒，每 {{ticks}} tick 重置，每 tick {{points}} 分",
+        "toggle_tip": "停用会销毁运行中的山头并将其从榜单隐藏。分数会保留，重新启用后恢复。"
+      },
       "notices": {
         "delete": "你确定要删除通知该通知吗？",
         "empty": {
@@ -616,6 +635,7 @@
       "divisions": "分组管理",
       "index": "比赛管理",
       "info": "信息编辑",
+      "koh": "山丘之王运维",
       "notices": "比赛公告",
       "review": "队伍审核",
       "writeups": "Writeups"

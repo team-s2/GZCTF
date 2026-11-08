@@ -20,6 +20,9 @@ export const kohStatusColor = (status?: string | null) => {
   }
 }
 
+export const fmtKoHPoints = (value: number) =>
+  Math.abs(value) >= 100 ? Math.round(value).toString() : value.toFixed(1)
+
 interface CopyableProps {
   value: string
   tooltip: string

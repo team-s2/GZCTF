@@ -94,6 +94,55 @@ public class KoHRepository(
             return GenTimeline(game, token);
         }, token: token);
 
+    public async Task<KoHAdminStateModel> GetAdminState(Game game, CancellationToken token = default)
+    {
+        var hills = await Context.GameChallenges
+            .IgnoreAutoIncludes()
+            .Where(c => c.GameId == game.Id && c.Type == ChallengeType.KingOfTheHill)
+            .OrderBy(c => c.Category).ThenBy(c => c.Id)
+            .Select(c => new { c.Id, c.Title, c.IsEnabled })
+            .ToListAsync(token);
+
+        var latest = await LatestResults(game.Id, token);
+        var holderIds = latest.Values.Select(r => r.Holder).OfType<int>().Distinct().ToList();
+        var teamNames = await Context.Participations
+            .Where(p => holderIds.Contains(p.Id))
+            .ToDictionaryAsync(p => p.Id, p => p.Team.Name, token);
+
+        var targets = await Context.KoHTargets
+            .AsNoTracking()
+            .Include(t => t.Container)
+            .Where(t => t.GameId == game.Id)
+            .ToDictionaryAsync(t => t.ChallengeId, token);
+
+        var board = await GetScoreboard(game, token);
+
+        return new()
+        {
+            LatestRound = board.LatestRound,
+            RefreshTicks = board.RefreshTicks,
+            TickSeconds = board.TickSeconds,
+            HoldPointsPerTick = game.KoHHoldPointsPerTick,
+            Teams = board.Teams,
+            Hills = hills.Select(hill =>
+            {
+                var result = latest.GetValueOrDefault(hill.Id);
+                var target = targets.GetValueOrDefault(hill.Id);
+                return new KoHAdminHillModel
+                {
+                    ChallengeId = hill.Id,
+                    Title = hill.Title,
+                    IsEnabled = hill.IsEnabled,
+                    ContainerIp = target?.Container?.IP,
+                    ContainerPort = target?.Container?.Port,
+                    LastCheckStatus = result?.Status.ToString(),
+                    CurrentHolderTeamName = result?.Holder is { } holder ? teamNames.GetValueOrDefault(holder) : null,
+                    LastRefreshRound = target?.LastRefreshRound ?? 0
+                };
+            }).ToList()
+        };
+    }
+
     private async Task<KoHScoreboardModel> GenScoreboard(Game game, CancellationToken token)
     {
         var latestRound = await Context.KoHRounds
@@ -117,7 +166,8 @@ public class KoHRepository(
                     g.Key.ChallengeId,
                     Earned = g.Sum(r => r.HoldCredit),
                     Penalty = g.Sum(r => r.Penalty),
-                    Ticks = g.Count()
+                    Ticks = g.Count(),
+                    Broken = g.Count(r => r.Penalty > 0)
                 })
                 .ToListAsync(token))
             .ToDictionary(c => (c.Pid, c.ChallengeId));
@@ -140,7 +190,8 @@ public class KoHRepository(
                         Earned = cell?.Earned ?? 0,
                         Penalty = cell?.Penalty ?? 0,
                         TicksHeld = cell?.Ticks ?? 0,
-                        IsCurrentHolder = latest.GetValueOrDefault(hill.Id)?.Holder == team.Id
+                        IsCurrentHolder = latest.GetValueOrDefault(hill.Id)?.Holder == team.Id,
+                        BrokenTicks = cell?.Broken ?? 0
                     };
                 }).ToList();
 
@@ -150,7 +201,8 @@ public class KoHRepository(
                     TeamName = team.Team.Name,
                     Division = team.Division?.Name,
                     Total = scores.Sum(s => s.Points),
-                    Hills = scores
+                    Hills = scores,
+                    Avatar = team.Team.AvatarUrl
                 });
             })
             .OrderByDescending(r => r.Row.Total)
@@ -166,6 +218,7 @@ public class KoHRepository(
             LatestRound = latestRound?.Number ?? 0,
             CurrentRoundEndsAt = latestRound?.EndsAt,
             RefreshTicks = Math.Max(1, game.KoHRefreshTicks),
+            TickSeconds = game.KoHTickSeconds,
             Hills = hills.Select(hill =>
             {
                 var result = latest.GetValueOrDefault(hill.Id);
@@ -177,7 +230,8 @@ public class KoHRepository(
                         ? teamNames.GetValueOrDefault(holder)
                         : null,
                     LastCheckStatus = result?.Status.ToString(),
-                    LastRefreshRound = lastRefresh.GetValueOrDefault(hill.Id)
+                    LastRefreshRound = lastRefresh.GetValueOrDefault(hill.Id),
+                    Category = hill.Category
                 };
             }).ToList(),
             Teams = rows
@@ -237,8 +291,8 @@ public class KoHRepository(
         Context.GameChallenges
             .IgnoreAutoIncludes()
             .Where(c => c.GameId == gameId && c.IsEnabled && c.Type == ChallengeType.KingOfTheHill)
-            .OrderBy(c => c.Id)
-            .Select(c => new HillBrief(c.Id, c.Title))
+            .OrderBy(c => c.Category).ThenBy(c => c.Id)
+            .Select(c => new HillBrief(c.Id, c.Title, c.Category))
             .ToListAsync(token);
 
     private Task<List<Participation>> AcceptedTeams(int gameId, CancellationToken token) =>
@@ -262,7 +316,7 @@ public class KoHRepository(
         return rows.ToDictionary(r => r.ChallengeId);
     }
 
-    private sealed record HillBrief(int Id, string Title);
+    private sealed record HillBrief(int Id, string Title, ChallengeCategory Category);
 
     private sealed record LatestResult(
         int ChallengeId,

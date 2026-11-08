@@ -28,4 +28,9 @@ public interface IKoHRepository : IRepository
     /// The cached score timeline
     /// </summary>
     public Task<KoHTimelineModel> GetTimeline(Game game, CancellationToken token = default);
+
+    /// <summary>
+    /// Admin view of every hill, including disabled ones, and the leaderboard
+    /// </summary>
+    public Task<KoHAdminStateModel> GetAdminState(Game game, CancellationToken token = default);
 }

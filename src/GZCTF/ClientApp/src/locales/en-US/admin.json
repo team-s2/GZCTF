@@ -322,6 +322,25 @@
           "label": "Writeup Required"
         }
       },
+      "koh": {
+        "empty": {
+          "description": "Add a King of the Hill challenge to this game to manage it here.",
+          "title": "No King of the Hill challenges"
+        },
+        "enabled": "Enabled",
+        "endpoint": "Endpoint",
+        "health": "Health",
+        "hill": "Hill",
+        "king": "Current king",
+        "last_reset": "Last reset",
+        "leaderboard": "Hold-points leaderboard",
+        "no_container": "no container",
+        "no_king": "Uncontrolled",
+        "no_scores": "No hold points scored yet.",
+        "round": "Round {{round}}",
+        "summary": "{{seconds}}s ticks, reset every {{ticks}}, {{points}} pt/tick",
+        "toggle_tip": "Disabling destroys the running hill and hides it from the board. Its scores are kept and return when it is enabled again."
+      },
       "notices": {
         "delete": "Are you sure you want to delete this notice?",
         "empty": {
@@ -616,6 +635,7 @@
       "divisions": "Divisions",
       "index": "Games",
       "info": "Information",
+      "koh": "KoH Ops",
       "notices": "Notices",
       "review": "Teams",
       "writeups": "Writeups"

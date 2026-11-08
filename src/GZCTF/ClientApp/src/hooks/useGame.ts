@@ -77,8 +77,8 @@ export const useGameScoreboard = (numId: number) => {
   })
 
   // Hills live on their own board, the shared payload only carries them for the challenge cards
-  const { jeopardyBoard, hasKoH } = useMemo(() => {
-    if (!scoreboard?.challenges) return { jeopardyBoard: scoreboard, hasKoH: false }
+  const { jeopardyBoard, hasKoH, hasJeopardy } = useMemo(() => {
+    if (!scoreboard?.challenges) return { jeopardyBoard: scoreboard, hasKoH: false, hasJeopardy: false }
 
     const entries = Object.entries(scoreboard.challenges)
     const isJeopardy = (type: ChallengeType) => type !== ChallengeType.KingOfTheHill
@@ -91,10 +91,11 @@ export const useGameScoreboard = (numId: number) => {
     return {
       jeopardyBoard: { ...scoreboard, challenges },
       hasKoH: entries.some(([, items]) => items.some((item) => !isJeopardy(item.type))),
+      hasJeopardy: Object.keys(challenges).length > 0,
     }
   }, [scoreboard])
 
-  return { scoreboard: jeopardyBoard, hasKoH, error, mutate }
+  return { scoreboard: jeopardyBoard, hasKoH, hasJeopardy, error, mutate }
 }
 
 export const useKoHScoreboard = (numId: number) => {

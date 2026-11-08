@@ -1830,6 +1830,7 @@ export interface KoHScoreboardHill {
   lastCheckStatus?: string | null;
   /** @format int32 */
   lastRefreshRound: number;
+  category: ChallengeCategory;
 }
 
 export interface KoHHillScore {
@@ -1847,6 +1848,11 @@ export interface KoHHillScore {
   /** @format int32 */
   ticksHeld: number;
   isCurrentHolder: boolean;
+  /**
+   * Ticks that cost this team a broken-hill penalty
+   * @format int32
+   */
+  brokenTicks: number;
 }
 
 export interface KoHTeamScoreRow {
@@ -1860,6 +1866,7 @@ export interface KoHTeamScoreRow {
   total: number;
   /** One entry per hill, in the same order as the board's hills */
   hills: KoHHillScore[];
+  avatar?: string | null;
 }
 
 /** King of the Hill scoreboard */
@@ -1871,6 +1878,38 @@ export interface KoHScoreboardModel {
   /** @format int32 */
   refreshTicks: number;
   hills: KoHScoreboardHill[];
+  teams: KoHTeamScoreRow[];
+  /** @format int32 */
+  tickSeconds: number;
+}
+
+export interface KoHAdminHillModel {
+  /** @format int32 */
+  challengeId: number;
+  title: string;
+  isEnabled: boolean;
+  containerIp?: string | null;
+  /** @format int32 */
+  containerPort?: number | null;
+  /** Last functional verdict: Ok, Mumble, Offline, InternalError or null */
+  lastCheckStatus?: string | null;
+  currentHolderTeamName?: string | null;
+  /** @format int32 */
+  lastRefreshRound: number;
+}
+
+/** Admin view of every hill of a game and the hold-points leaderboard */
+export interface KoHAdminStateModel {
+  /** @format int32 */
+  latestRound: number;
+  /** @format int32 */
+  refreshTicks: number;
+  /** @format int32 */
+  tickSeconds: number;
+  /** @format double */
+  holdPointsPerTick: number;
+  /** Every hill of the game, including disabled ones */
+  hills: KoHAdminHillModel[];
   teams: KoHTeamScoreRow[];
 }
 
@@ -4451,6 +4490,31 @@ export class Api<
         format: "json",
         ...params,
       }),
+
+    /**
+     * @description Every hill of the game and the hold-points leaderboard, requires administrator privileges
+     *
+     * @tags Edit
+     * @name EditKoHState
+     * @summary Get King of the Hill State
+     * @request GET:/api/edit/games/{id}/koh/state
+     */
+    editKoHState: (id: number, params: RequestParams = {}) =>
+      this.request<KoHAdminStateModel, RequestResponse>({
+        path: `/api/edit/games/${id}/koh/state`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+    useEditKoHState: (
+      id: number,
+      options?: SWRConfiguration,
+      doFetch: boolean = true,
+    ) =>
+      useSWR<KoHAdminStateModel, RequestResponse>(
+        doFetch ? `/api/edit/games/${id}/koh/state` : null,
+        options,
+      ),
 
     /**
      * @description Updating a game challenge, requires administrator privileges. Flags are not affected; use Flag-related APIs to modify
