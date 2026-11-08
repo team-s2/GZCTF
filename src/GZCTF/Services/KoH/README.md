@@ -27,8 +27,7 @@ Hills are torn down when the game ends or the challenge is disabled. Scores are 
 
 Each round, at a jittered time inside the tick, the engine runs one check per hill:
 
-1. **Functional check** in a short-lived container or pod on the hill's network. A custom image (`GameChallenge.KoHCheckerImage`) receives `GZCTF_ACTION`, `GZCTF_TARGET_IP`, `GZCTF_TARGET_PORT`, `GZCTF_ROUND` and `GZCTF_CHALLENGE_ID`, and reports through its exit code. Without an image, a built-in `nc -z` TCP probe is used, which can only report Ok or Offline.
-   On Kubernetes, the `gzctf-network-koh-checker` network policy limits checker pods to challenge pods in the same namespace, so a checker cannot reach the rest of the cluster or the internet.
+1. **Functional check** in a short-lived container or pod that can reach the hill (see [Network design](#network-design)). A custom image (`GameChallenge.KoHCheckerImage`) receives `GZCTF_ACTION`, `GZCTF_TARGET_IP`, `GZCTF_TARGET_PORT`, `GZCTF_ROUND` and `GZCTF_CHALLENGE_ID`, and reports through its exit code. Without an image, a built-in `nc -z` TCP probe is used, which can only report Ok or Offline.
 2. **Marker read** of `/koh/king`, trimmed and matched against the tokens of the current window. On Docker this uses the archive API, so the image needs no tools. On Kubernetes it execs in the pod, so the image needs `sh`, `head`, `base64` and `tr`.
 3. **One `KoHControlResult`** per hill and round:
 
@@ -40,6 +39,45 @@ Each round, at a jittered time inside the tick, the engine runs one check per hi
 | Yes | InternalError (any other exit, or platform fault) | 0 | 0 |
 
 A king who did not hold the hill in either of the previous two ticks gets no penalty on a broken hill, so nobody pays for damage left by the previous holder. Two ticks rather than one stops a team from re-arming this grace by dropping the marker every other tick.
+
+## Network design
+
+A hill has three separate network paths, and only one of them is controlled by the challenge's **Network Mode (Public network access)** setting.
+
+| Path | How it works | Affected by Network Mode |
+| --- | --- | --- |
+| Players to the hill | The hill's `entry`: the platform proxy (`/api/proxy/{id}` over WebSocket) with `PlatformProxy`, otherwise a public host port or NodePort | No |
+| Checker to the hill | A short-lived checker connects to the hill's internal address and service port | Docker only, to pick the network to join |
+| The hill to anywhere else | Outbound traffic started by the hill | **Yes** |
+
+The marker read and hill resets go through the Docker or Kubernetes API, so they don't depend on any of these paths.
+
+### Network Mode
+
+The setting only limits outbound traffic from the hill. Players can still reach an `Isolated` hill through its entry.
+
+| Mode | Docker | Kubernetes |
+| --- | --- | --- |
+| `Open` | Bridge network `<prefix>-open` with normal outbound access | Outbound allowed except to `AllowCIDR` (`10.0.0.0/8` if unset) |
+| `Isolated` | Bridge network `<prefix>-isolated` with no outbound NAT | All outbound traffic denied, including DNS |
+| `Custom` | The network `<prefix>-custom`, which the operator must create first | Pod labelled `custom`. GZCTF adds no policy, so outbound is unrestricted unless the operator adds one |
+
+`<prefix>` comes from `DockerConfig.ChallengeNetwork` and defaults to `gzctf`.
+
+Prefer `Isolated` unless the service needs outbound access. On `Open`, a compromised hill can make outbound connections to the internet, such as a reverse shell to a player's server.
+
+Hills in the same mode can reach each other on Docker, because they share a bridge. On Kubernetes they can't, as long as `AllowCIDR` covers the pod and service CIDRs.
+
+### Checker networking
+
+- **Docker:** the checker joins the same network as the hill and connects to its container IP.
+- **Kubernetes:** the checker connects to the hill's ClusterIP. It deliberately has no `NetworkMode` label, because the `open` policy blocks cluster CIDRs and would cut it off from the hill. Instead, the `gzctf-network-koh-checker` policy allows outbound traffic only to pods in the challenge namespace.
+
+A checker reads responses from a hill that players control, so it gets no route to the rest of the cluster or the internet. A custom checker should use only `GZCTF_TARGET_IP` and `GZCTF_TARGET_PORT`, since DNS is not available to it on Kubernetes.
+
+### Changing the mode during a game
+
+A running hill keeps its mode until its next reset or relaunch. On Docker, the checker uses the new setting straight away, so it can land on a different network from the hill. The hill then reports Offline and its king takes the broken-hill penalty until the next reset. Avoid changing the mode mid-game on Docker.
 
 ## Data model
 
