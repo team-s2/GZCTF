@@ -39,6 +39,13 @@ public static class TransferExtensions
                 };
             }
 
+            transfer.KoH = new KoHSection
+            {
+                TickSeconds = game.KoHTickSeconds,
+                RefreshTicks = game.KoHRefreshTicks,
+                HoldPointsPerTick = game.KoHHoldPointsPerTick
+            };
+
             // Blood bonus configuration
             var bloodBonus = game.BloodBonus;
             if (!bloodBonus.NoBonus)
@@ -119,7 +126,8 @@ public static class TransferExtensions
                     StorageLimit = challenge.StorageLimit ?? 256,
                     ExposePort = challenge.ExposePort ?? 80,
                     FileName = challenge.FileName,
-                    NetworkMode = challenge.NetworkMode ?? NetworkMode.Open
+                    NetworkMode = challenge.NetworkMode ?? NetworkMode.Open,
+                    KoHCheckerImage = challenge.KoHCheckerImage
                 };
             }
 
@@ -221,6 +229,13 @@ public static class TransferExtensions
             }
 
             // Blood bonus configuration
+            if (transfer.KoH != null)
+            {
+                game.KoHTickSeconds = transfer.KoH.TickSeconds;
+                game.KoHRefreshTicks = transfer.KoH.RefreshTicks;
+                game.KoHHoldPointsPerTick = transfer.KoH.HoldPointsPerTick;
+            }
+
             if (transfer.BloodBonus != null)
             {
                 var bloodBonusValue = ((long)transfer.BloodBonus.First << 20)
@@ -277,6 +292,7 @@ public static class TransferExtensions
             challenge.ExposePort = transfer.Container.ExposePort;
             challenge.FileName = transfer.Container.FileName;
             challenge.NetworkMode = transfer.Container.NetworkMode;
+            challenge.KoHCheckerImage = transfer.Container.KoHCheckerImage;
 
             return challenge;
         }

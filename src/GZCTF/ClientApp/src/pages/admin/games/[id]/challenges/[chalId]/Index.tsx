@@ -465,7 +465,18 @@ const GameChallengeEdit: FC = () => {
             onChange={(e) => setChallengeInfo({ ...challengeInfo, fileName: e.target.value })}
           />
         )}
-        {(type === ChallengeType.StaticContainer || type === ChallengeType.DynamicContainer) && (
+        {type === ChallengeType.KingOfTheHill && (
+          <TextInput
+            label={t('admin.content.games.challenges.koh_checker_image.label')}
+            description={t('admin.content.games.challenges.koh_checker_image.description')}
+            disabled={disabled}
+            value={challengeInfo.koHCheckerImage ?? ''}
+            onChange={(e) => setChallengeInfo({ ...challengeInfo, koHCheckerImage: e.target.value })}
+          />
+        )}
+        {(type === ChallengeType.StaticContainer ||
+          type === ChallengeType.DynamicContainer ||
+          type === ChallengeType.KingOfTheHill) && (
           <Grid columns={12}>
             <Grid.Col span={8}>
               <Group justify="space-between" align="flex-end">
@@ -590,7 +601,7 @@ const GameChallengeEdit: FC = () => {
             </Grid.Col>
             <Grid.Col span={4} display="flex" className={misc.alignCenter}>
               <Switch
-                disabled={disabled}
+                disabled={disabled || type === ChallengeType.KingOfTheHill}
                 checked={challengeInfo.enableTrafficCapture ?? false}
                 label={SwitchLabel(
                   t('admin.content.games.challenges.traffic_capture.label'),

@@ -108,6 +108,24 @@ public class GameInfoModel
     [JsonPropertyName("bloodBonus")]
     public long BloodBonusValue { get; set; } = BloodBonus.DefaultValue;
 
+    /// <summary>
+    /// King of the Hill: length of a tick in seconds
+    /// </summary>
+    [Range(10, 3600)]
+    public int KoHTickSeconds { get; set; } = 60;
+
+    /// <summary>
+    /// King of the Hill: ticks between hill resets
+    /// </summary>
+    [Range(1, 1000)]
+    public int KoHRefreshTicks { get; set; } = 5;
+
+    /// <summary>
+    /// King of the Hill: points the controlling team earns per tick
+    /// </summary>
+    [Range(0.0, 1000.0)]
+    public double KoHHoldPointsPerTick { get; set; } = 1.0;
+
     internal static GameInfoModel FromGame(Data.Game game) =>
         new()
         {
@@ -128,6 +146,9 @@ public class GameInfoModel
             WriteupDeadline = game.WriteupDeadline,
             WriteupNote = game.WriteupNote,
             WriteupRequired = game.WriteupRequired,
-            BloodBonusValue = game.BloodBonus.Val
+            BloodBonusValue = game.BloodBonus.Val,
+            KoHTickSeconds = game.KoHTickSeconds,
+            KoHRefreshTicks = game.KoHRefreshTicks,
+            KoHHoldPointsPerTick = game.KoHHoldPointsPerTick
         };
 }

@@ -21,7 +21,7 @@ import { Trans } from 'react-i18next'
 import { ScrollingText } from '@Components/ScrollingText'
 import { useLanguage } from '@Utils/I18n'
 import { BloodsTypes, PartialIconProps, useChallengeCategoryLabelMap } from '@Utils/Shared'
-import { ChallengeInfo, SubmissionType } from '@Api'
+import { ChallengeInfo, ChallengeType, SubmissionType } from '@Api'
 import classes from '@Styles/ChallengeCard.module.css'
 import misc from '@Styles/Misc.module.css'
 
@@ -62,7 +62,7 @@ export const ChallengeCard: FC<ChallengeCardProps> = (props: ChallengeCardProps)
         <Divider size="sm" color={cateData?.color} />
         <Group wrap="nowrap" justify="space-between" align="center" gap={2}>
           <Text ta="center" fw="bold" fz="lg" ff="monospace">
-            {challenge.score}&nbsp;pts
+            {challenge.type === ChallengeType.KingOfTheHill ? 'KoH' : <>{challenge.score}&nbsp;pts</>}
           </Text>
           <Stack gap="xs">
             <Title order={6} ta="center" mt={`calc(${theme.spacing.xs} / 2)`}>

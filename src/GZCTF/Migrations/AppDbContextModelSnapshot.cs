@@ -18,7 +18,7 @@ namespace GZCTF.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.12")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -476,6 +476,15 @@ namespace GZCTF.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
 
+                    b.Property<double>("KoHHoldPointsPerTick")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("KoHRefreshTicks")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("KoHTickSeconds")
+                        .HasColumnType("integer");
+
                     b.Property<string>("PosterHash")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
@@ -583,6 +592,9 @@ namespace GZCTF.Migrations
 
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("KoHCheckerImage")
+                        .HasColumnType("text");
 
                     b.Property<int?>("MemoryLimit")
                         .HasColumnType("integer");
@@ -729,6 +741,154 @@ namespace GZCTF.Migrations
                     b.HasIndex("GameId");
 
                     b.ToTable("GameNotices");
+                });
+
+            modelBuilder.Entity("GZCTF.Models.Data.KoHControlResult", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChallengeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("CheckedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("ControllingParticipationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(4096)
+                        .HasColumnType("character varying(4096)");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("integer");
+
+                    b.Property<double>("HoldCredit")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Penalty")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("RoundId")
+                        .HasColumnType("integer");
+
+                    b.Property<byte>("Status")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ControllingParticipationId");
+
+                    b.HasIndex("RoundId");
+
+                    b.HasIndex("ChallengeId", "RoundId")
+                        .IsUnique();
+
+                    b.HasIndex("GameId", "ChallengeId");
+
+                    b.ToTable("KoHControlResults");
+                });
+
+            modelBuilder.Entity("GZCTF.Models.Data.KoHRound", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("EndsAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("StartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId", "Number")
+                        .IsUnique();
+
+                    b.ToTable("KoHRounds");
+                });
+
+            modelBuilder.Entity("GZCTF.Models.Data.KoHTarget", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChallengeId")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("ContainerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("LastRefreshRound")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChallengeId");
+
+                    b.HasIndex("ContainerId");
+
+                    b.HasIndex("GameId", "ChallengeId")
+                        .IsUnique();
+
+                    b.ToTable("KoHTargets");
+                });
+
+            modelBuilder.Entity("GZCTF.Models.Data.KoHToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("IssuedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ParticipationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RoundId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RoundNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(127)
+                        .HasColumnType("character varying(127)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoundId");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("ParticipationId", "RoundNumber")
+                        .IsUnique();
+
+                    b.ToTable("KoHTokens");
                 });
 
             modelBuilder.Entity("GZCTF.Models.Data.LocalFile", b =>
@@ -1585,6 +1745,88 @@ namespace GZCTF.Migrations
                         .IsRequired();
 
                     b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("GZCTF.Models.Data.KoHControlResult", b =>
+                {
+                    b.HasOne("GZCTF.Models.Data.GameChallenge", "Challenge")
+                        .WithMany()
+                        .HasForeignKey("ChallengeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GZCTF.Models.Data.Participation", "ControllingParticipation")
+                        .WithMany()
+                        .HasForeignKey("ControllingParticipationId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("GZCTF.Models.Data.KoHRound", "Round")
+                        .WithMany()
+                        .HasForeignKey("RoundId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Challenge");
+
+                    b.Navigation("ControllingParticipation");
+
+                    b.Navigation("Round");
+                });
+
+            modelBuilder.Entity("GZCTF.Models.Data.KoHRound", b =>
+                {
+                    b.HasOne("GZCTF.Models.Data.Game", "Game")
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("GZCTF.Models.Data.KoHTarget", b =>
+                {
+                    b.HasOne("GZCTF.Models.Data.GameChallenge", "Challenge")
+                        .WithMany()
+                        .HasForeignKey("ChallengeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GZCTF.Models.Data.Container", "Container")
+                        .WithMany()
+                        .HasForeignKey("ContainerId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("GZCTF.Models.Data.Game", "Game")
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Challenge");
+
+                    b.Navigation("Container");
+
+                    b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("GZCTF.Models.Data.KoHToken", b =>
+                {
+                    b.HasOne("GZCTF.Models.Data.Participation", "Participation")
+                        .WithMany()
+                        .HasForeignKey("ParticipationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GZCTF.Models.Data.KoHRound", "Round")
+                        .WithMany()
+                        .HasForeignKey("RoundId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Participation");
+
+                    b.Navigation("Round");
                 });
 
             modelBuilder.Entity("GZCTF.Models.Data.Participation", b =>

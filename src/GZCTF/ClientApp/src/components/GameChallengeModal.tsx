@@ -6,6 +6,7 @@ import { Icon } from '@mdi/react'
 import React, { FC, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChallengeModal } from '@Components/ChallengeModal'
+import { KoHChallengePanel } from '@Components/KoHChallengePanel'
 import { encryptApiData } from '@Utils/Crypto'
 import { showErrorMsg } from '@Utils/Shared'
 import { ChallengeCategoryItemProps } from '@Utils/Shared'
@@ -263,6 +264,11 @@ export const GameChallengeModal: FC<GameChallengeModalProps> = (props) => {
       onExtend={onExtend}
       gameEnded={gameEnded}
       practiceMode={practiceMode}
+      kohPanel={
+        challenge?.type === ChallengeType.KingOfTheHill ? (
+          <KoHChallengePanel gameId={gameId} challengeId={challengeId} />
+        ) : undefined
+      }
     />
   )
 }

@@ -276,6 +276,18 @@ public enum ParticipationStatus : byte
     Unsubmitted = 4
 }
 
+/// <summary>
+/// Functional verdict of a King of the Hill check
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter<KoHCheckStatus>))]
+public enum KoHCheckStatus : byte
+{
+    Ok = 0,
+    Mumble = 1,
+    Offline = 2,
+    InternalError = 3
+}
+
 [JsonConverter(typeof(JsonStringEnumConverter<ChallengeType>))]
 public enum ChallengeType : byte
 {
@@ -301,7 +313,13 @@ public enum ChallengeType : byte
     /// Dynamic container challenge
     /// Randomly distribute containers, dynamic flag passed in via environment variables
     /// </summary>
-    DynamicContainer = 0b11
+    DynamicContainer = 0b11,
+
+    /// <summary>
+    /// King of the Hill challenge
+    /// All teams fight over one shared container, whoever has their token in the marker scores each tick
+    /// </summary>
+    KingOfTheHill = 0b101
 }
 
 public static class ChallengeTypeExtensions
@@ -327,6 +345,16 @@ public static class ChallengeTypeExtensions
         /// Is it a container challenge
         /// </summary>
         public bool IsContainer() => ((byte)type & 0b01) != 0;
+
+        /// <summary>
+        /// Is it a King of the Hill challenge
+        /// </summary>
+        public bool IsKingOfTheHill() => type == ChallengeType.KingOfTheHill;
+
+        /// <summary>
+        /// Does each team run its own container for this challenge
+        /// </summary>
+        public bool HasTeamContainer() => type.IsContainer() && !type.IsKingOfTheHill();
     }
 }
 

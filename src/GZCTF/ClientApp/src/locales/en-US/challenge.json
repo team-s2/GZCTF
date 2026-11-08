@@ -182,6 +182,10 @@
       "desrc": "Automatic flag generation, unique for each team",
       "label": "Dynamic Container"
     },
+    "king_of_the_hill": {
+      "desrc": "One shared container for all teams, hold it with your token in /koh/king to score each tick",
+      "label": "King of the Hill"
+    },
     "static_attachment": {
       "desrc": "Shared attachments, any flag can be submitted",
       "label": "Static Attachments"

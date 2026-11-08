@@ -46,6 +46,7 @@ public class GameController(
     IGameNoticeRepository noticeRepository,
     ICheatInfoRepository cheatInfoRepository,
     IContainerRepository containerRepository,
+    IKoHRepository kohRepository,
     IGameEventRepository gameEventRepository,
     ISubmissionRepository submissionRepository,
     IGameChallengeRepository challengeRepository,
@@ -822,6 +823,107 @@ public class GameController(
     }
 
     /// <summary>
+    /// Get the caller's King of the Hill control token
+    /// </summary>
+    /// <remarks>
+    /// The token is valid on every hill of the game and rotates when the hills are reset
+    /// </remarks>
+    /// <param name="id">Game ID</param>
+    /// <param name="token"></param>
+    /// <response code="200">Control token</response>
+    [RequireUser]
+    [HttpGet("{id:int}/KoH/Token")]
+    [ProducesResponseType(typeof(KoHTokenModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(RequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(RequestResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> KoHToken([FromRoute] int id, CancellationToken token)
+    {
+        var context = await GetContextInfo(id, token: token);
+
+        if (context.Result is not null)
+            return context.Result;
+
+        return Ok(await kohRepository.GetToken(context.Game!, context.Participation!.Id, token));
+    }
+
+    /// <summary>
+    /// Get the state of every King of the Hill hill
+    /// </summary>
+    /// <param name="id">Game ID</param>
+    /// <param name="token"></param>
+    /// <response code="200">Hill states</response>
+    [RequireUser]
+    [HttpGet("{id:int}/KoH/Hills")]
+    [ProducesResponseType(typeof(KoHHillStateModel[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(RequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(RequestResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> KoHHills([FromRoute] int id, CancellationToken token)
+    {
+        var context = await GetContextInfo(id, token: token);
+
+        if (context.Result is not null)
+            return context.Result;
+
+        var part = context.Participation!;
+        var visible = new List<KoHHillStateModel>();
+
+        foreach (var hill in await kohRepository.GetHills(id, part.Id, token))
+        {
+            var permission = await divisionRepository.GetPermission(part.DivisionId, hill.ChallengeId, token);
+            if (permission.HasFlag(GamePermission.ViewChallenge))
+                visible.Add(hill);
+        }
+
+        return Ok(visible);
+    }
+
+    /// <summary>
+    /// Get the King of the Hill scoreboard
+    /// </summary>
+    /// <param name="id">Game ID</param>
+    /// <param name="token"></param>
+    /// <response code="200">Scoreboard</response>
+    [HttpGet("{id:int}/KoH/Scoreboard")]
+    [ProducesResponseType(typeof(KoHScoreboardModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(RequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(RequestResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> KoHScoreboard([FromRoute] int id, CancellationToken token)
+    {
+        var game = await GetStartedKoHGame(id, token);
+        return game.Result ?? Ok(await kohRepository.GetScoreboard(game.Game!, token));
+    }
+
+    /// <summary>
+    /// Get the King of the Hill score timeline
+    /// </summary>
+    /// <param name="id">Game ID</param>
+    /// <param name="token"></param>
+    /// <response code="200">Score timeline</response>
+    [HttpGet("{id:int}/KoH/Timeline")]
+    [ProducesResponseType(typeof(KoHTimelineModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(RequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(RequestResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> KoHTimeline([FromRoute] int id, CancellationToken token)
+    {
+        var game = await GetStartedKoHGame(id, token);
+        return game.Result ?? Ok(await kohRepository.GetTimeline(game.Game!, token));
+    }
+
+    private async Task<(Game? Game, IActionResult? Result)> GetStartedKoHGame(int id, CancellationToken token)
+    {
+        var game = await gameRepository.GetGameById(id, token);
+
+        if (game is null || !await kohRepository.HasHills(id, token))
+            return (null, NotFound(new RequestResponse(localizer[nameof(Resources.Program.Game_NotFound)],
+                StatusCodes.Status404NotFound)));
+
+        if (DateTimeOffset.UtcNow < game.StartTimeUtc)
+            return (null, BadRequest(new RequestResponse(localizer[nameof(Resources.Program.Game_NotStarted)])));
+
+        return (game, null);
+    }
+
+    /// <summary>
     /// Downloads the scoreboard
     /// </summary>
     /// <remarks>
@@ -1001,7 +1103,8 @@ public class GameController(
             var instance =
                 await gameInstanceRepository.GetInstanceForSubmission(context.Participation!, challengeId, token);
 
-            if (instance is null)
+            // Hills are scored by control tokens, they have no flag to submit
+            if (instance is null || instance.Challenge.Type.IsKingOfTheHill())
                 return NotFound(new RequestResponse(localizer[nameof(Resources.Program.Game_ChallengeNotFound)],
                     StatusCodes.Status404NotFound));
 
@@ -1234,7 +1337,7 @@ public class GameController(
             return NotFound(new RequestResponse(localizer[nameof(Resources.Program.Challenge_NotFound)],
                 StatusCodes.Status404NotFound));
 
-        if (!instance.Challenge.Type.IsContainer())
+        if (!instance.Challenge.Type.HasTeamContainer())
             return BadRequest(
                 new RequestResponse(localizer[nameof(Resources.Program.Game_ContainerCreationNotAllowed)]));
 
@@ -1296,7 +1399,7 @@ public class GameController(
             return NotFound(new RequestResponse(localizer[nameof(Resources.Program.Challenge_NotFound)],
                 StatusCodes.Status404NotFound));
 
-        if (!instance.Challenge.Type.IsContainer())
+        if (!instance.Challenge.Type.HasTeamContainer())
             return BadRequest(
                 new RequestResponse(localizer[nameof(Resources.Program.Game_ContainerCreationNotAllowed)]));
 
@@ -1347,7 +1450,7 @@ public class GameController(
             return NotFound(new RequestResponse(localizer[nameof(Resources.Program.Challenge_NotFound)],
                 StatusCodes.Status404NotFound));
 
-        if (!instance.Challenge.Type.IsContainer())
+        if (!instance.Challenge.Type.HasTeamContainer())
             return BadRequest(
                 new RequestResponse(localizer[nameof(Resources.Program.Game_ContainerCreationNotAllowed)]));
 

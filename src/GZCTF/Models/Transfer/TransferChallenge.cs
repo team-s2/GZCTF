@@ -272,6 +272,11 @@ public class ContainerSection
     public NetworkMode? NetworkMode { get; set; } = Utils.NetworkMode.Open;
 
     /// <summary>
+    /// King of the Hill functional checker image
+    /// </summary>
+    public string? KoHCheckerImage { get; set; }
+
+    /// <summary>
     /// Download file name (for dynamic attachments)
     /// </summary>
     public string? FileName { get; set; }

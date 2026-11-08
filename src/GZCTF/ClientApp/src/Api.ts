@@ -131,6 +131,7 @@ export enum ChallengeType {
   StaticContainer = "StaticContainer",
   DynamicAttachment = "DynamicAttachment",
   DynamicContainer = "DynamicContainer",
+  KingOfTheHill = "KingOfTheHill",
 }
 
 /** Game participant permission */
@@ -996,6 +997,27 @@ export interface GameInfoModel {
   /** Accept teams without review */
   acceptWithoutReview?: boolean;
   /** Is writeup required */
+  /**
+   * King of the Hill: length of a tick in seconds
+   * @format int32
+   * @min 10
+   * @max 3600
+   */
+  koHTickSeconds?: number;
+  /**
+   * King of the Hill: ticks between hill resets
+   * @format int32
+   * @min 1
+   * @max 1000
+   */
+  koHRefreshTicks?: number;
+  /**
+   * King of the Hill: points the controlling team earns per tick
+   * @format double
+   * @min 0
+   * @max 1000
+   */
+  koHHoldPointsPerTick?: number;
   writeupRequired?: boolean;
   /**
    * Game invitation code
@@ -1179,6 +1201,8 @@ export interface ChallengeEditDetailModel {
   category: ChallengeCategory;
   /** Challenge type */
   type: ChallengeType;
+  /** King of the Hill: functional checker image, empty uses the built-in TCP probe */
+  koHCheckerImage?: string | null;
   /** Challenge hints */
   hints?: string[];
   /**
@@ -1347,6 +1371,8 @@ export interface ChallengeInfoModel {
 
 /** Challenge update information (Edit) */
 export interface ChallengeUpdateModel {
+  /** King of the Hill: functional checker image, empty uses the built-in TCP probe */
+  koHCheckerImage?: string | null;
   /**
    * Challenge title
    * @minLength 1
@@ -1760,7 +1786,158 @@ export interface DivisionChallengeItem {
   permissions: GamePermission;
 }
 
+/** The caller's control token for the current refresh window */
+export interface KoHTokenModel {
+  /**
+   * The anchor round the token belongs to, 0 before the first round
+   * @format int32
+   */
+  round: number;
+  /** The exact value to write into /koh/king, null when not available */
+  token?: string | null;
+  /** ready, warmup (no round yet) or no-token (the team joined after the window was minted) */
+  status: string;
+}
+
+/** Current state of one hill, as seen by a participating team */
+export interface KoHHillStateModel {
+  /** @format int32 */
+  challengeId: number;
+  title: string;
+  /**
+   * The round of the last scored result
+   * @format int32
+   */
+  round: number;
+  holderTeamName?: string | null;
+  /** Whether the caller's team is the recorded holder */
+  isYou: boolean;
+  /** Last functional verdict: Ok, Mumble, Offline, InternalError or null */
+  status?: string | null;
+  /** @format date-time */
+  checkedAt?: string | null;
+  /** How to reach the hill: host:port, or a container id when served by the platform proxy */
+  entry?: string | null;
+  /** @format int32 */
+  lastRefreshRound: number;
+}
+
+export interface KoHScoreboardHill {
+  /** @format int32 */
+  challengeId: number;
+  title: string;
+  currentHolderTeamName?: string | null;
+  lastCheckStatus?: string | null;
+  /** @format int32 */
+  lastRefreshRound: number;
+  category: ChallengeCategory;
+}
+
+export interface KoHHillScore {
+  /** @format int32 */
+  challengeId: number;
+  /**
+   * Earned - Penalty
+   * @format double
+   */
+  points: number;
+  /** @format double */
+  earned: number;
+  /** @format double */
+  penalty: number;
+  /** @format int32 */
+  ticksHeld: number;
+  isCurrentHolder: boolean;
+  /**
+   * Ticks that cost this team a broken-hill penalty
+   * @format int32
+   */
+  brokenTicks: number;
+}
+
+export interface KoHTeamScoreRow {
+  /** @format int32 */
+  rank: number;
+  /** @format int32 */
+  teamId: number;
+  teamName: string;
+  division?: string | null;
+  /** @format double */
+  total: number;
+  /** One entry per hill, in the same order as the board's hills */
+  hills: KoHHillScore[];
+  avatar?: string | null;
+}
+
+/** King of the Hill scoreboard */
+export interface KoHScoreboardModel {
+  /** @format int32 */
+  latestRound: number;
+  /** @format date-time */
+  currentRoundEndsAt?: string | null;
+  /** @format int32 */
+  refreshTicks: number;
+  hills: KoHScoreboardHill[];
+  teams: KoHTeamScoreRow[];
+  /** @format int32 */
+  tickSeconds: number;
+}
+
+export interface KoHAdminHillModel {
+  /** @format int32 */
+  challengeId: number;
+  title: string;
+  isEnabled: boolean;
+  containerIp?: string | null;
+  /** @format int32 */
+  containerPort?: number | null;
+  /** Last functional verdict: Ok, Mumble, Offline, InternalError or null */
+  lastCheckStatus?: string | null;
+  currentHolderTeamName?: string | null;
+  /** @format int32 */
+  lastRefreshRound: number;
+}
+
+/** Admin view of every hill of a game and the hold-points leaderboard */
+export interface KoHAdminStateModel {
+  /** @format int32 */
+  latestRound: number;
+  /** @format int32 */
+  refreshTicks: number;
+  /** @format int32 */
+  tickSeconds: number;
+  /** @format double */
+  holdPointsPerTick: number;
+  /** Every hill of the game, including disabled ones */
+  hills: KoHAdminHillModel[];
+  teams: KoHTeamScoreRow[];
+}
+
+export interface KoHTimelinePoint {
+  /** @format int32 */
+  round: number;
+  /** @format date-time */
+  time: string;
+  /** @format double */
+  score: number;
+}
+
+export interface KoHTeamTimeline {
+  /** @format int32 */
+  teamId: number;
+  teamName: string;
+  division?: string | null;
+  items: KoHTimelinePoint[];
+}
+
+/** Cumulative King of the Hill score per team over the rounds */
+export interface KoHTimelineModel {
+  teams: KoHTeamTimeline[];
+}
+
 export interface ChallengeInfo {
+  /** Challenge type */
+  type: ChallengeType;
   /**
    * Challenge ID
    * @format int32
@@ -4315,6 +4492,31 @@ export class Api<
       }),
 
     /**
+     * @description Every hill of the game and the hold-points leaderboard, requires administrator privileges
+     *
+     * @tags Edit
+     * @name EditKoHState
+     * @summary Get King of the Hill State
+     * @request GET:/api/edit/games/{id}/koh/state
+     */
+    editKoHState: (id: number, params: RequestParams = {}) =>
+      this.request<KoHAdminStateModel, RequestResponse>({
+        path: `/api/edit/games/${id}/koh/state`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+    useEditKoHState: (
+      id: number,
+      options?: SWRConfiguration,
+      doFetch: boolean = true,
+    ) =>
+      useSWR<KoHAdminStateModel, RequestResponse>(
+        doFetch ? `/api/edit/games/${id}/koh/state` : null,
+        options,
+      ),
+
+    /**
      * @description Updating a game challenge, requires administrator privileges. Flags are not affected; use Flag-related APIs to modify
      *
      * @tags Edit
@@ -5251,6 +5453,114 @@ export class Api<
       options?: MutatorOptions,
     ) =>
       mutate<BasicGameInfoModel[]>([`/api/game/recent`, query], data, options),
+
+    /**
+     * @tags Game
+     * @name GameKoHHills
+     * @request GET:/api/game/{id}/koh/hills
+     */
+    gameKoHHills: (id: number, params: RequestParams = {}) =>
+      this.request<KoHHillStateModel[], RequestResponse>({
+        path: `/api/game/${id}/koh/hills`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+    /**
+     * @tags Game
+     * @name GameKoHHills
+     * @request GET:/api/game/{id}/koh/hills
+     */
+    useGameKoHHills: (
+      id: number,
+      options?: SWRConfiguration,
+      doFetch: boolean = true,
+    ) =>
+      useSWR<KoHHillStateModel[], RequestResponse>(
+        doFetch ? `/api/game/${id}/koh/hills` : null,
+        options,
+      ),
+
+    /**
+     * @tags Game
+     * @name GameKoHScoreboard
+     * @request GET:/api/game/{id}/koh/scoreboard
+     */
+    gameKoHScoreboard: (id: number, params: RequestParams = {}) =>
+      this.request<KoHScoreboardModel, RequestResponse>({
+        path: `/api/game/${id}/koh/scoreboard`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+    /**
+     * @tags Game
+     * @name GameKoHScoreboard
+     * @request GET:/api/game/{id}/koh/scoreboard
+     */
+    useGameKoHScoreboard: (
+      id: number,
+      options?: SWRConfiguration,
+      doFetch: boolean = true,
+    ) =>
+      useSWR<KoHScoreboardModel, RequestResponse>(
+        doFetch ? `/api/game/${id}/koh/scoreboard` : null,
+        options,
+      ),
+
+    /**
+     * @tags Game
+     * @name GameKoHTimeline
+     * @request GET:/api/game/{id}/koh/timeline
+     */
+    gameKoHTimeline: (id: number, params: RequestParams = {}) =>
+      this.request<KoHTimelineModel, RequestResponse>({
+        path: `/api/game/${id}/koh/timeline`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+    /**
+     * @tags Game
+     * @name GameKoHTimeline
+     * @request GET:/api/game/{id}/koh/timeline
+     */
+    useGameKoHTimeline: (
+      id: number,
+      options?: SWRConfiguration,
+      doFetch: boolean = true,
+    ) =>
+      useSWR<KoHTimelineModel, RequestResponse>(
+        doFetch ? `/api/game/${id}/koh/timeline` : null,
+        options,
+      ),
+
+    /**
+     * @tags Game
+     * @name GameKoHToken
+     * @request GET:/api/game/{id}/koh/token
+     */
+    gameKoHToken: (id: number, params: RequestParams = {}) =>
+      this.request<KoHTokenModel, RequestResponse>({
+        path: `/api/game/${id}/koh/token`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+    /**
+     * @tags Game
+     * @name GameKoHToken
+     * @request GET:/api/game/{id}/koh/token
+     */
+    useGameKoHToken: (
+      id: number,
+      options?: SWRConfiguration,
+      doFetch: boolean = true,
+    ) =>
+      useSWR<KoHTokenModel, RequestResponse>(
+        doFetch ? `/api/game/${id}/koh/token` : null,
+        options,
+      ),
 
     /**
      * @description Retrieves the scoreboard data

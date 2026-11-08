@@ -81,6 +81,11 @@ public class TransferGame : IValidatableObject
     public BloodBonusSection? BloodBonus { get; set; }
 
     /// <summary>
+    /// King of the Hill configuration
+    /// </summary>
+    public KoHSection? KoH { get; set; }
+
+    /// <summary>
     /// Poster hash
     /// </summary>
     [MaxLength(Limits.FileHashLength, ErrorMessage = "Poster hash is too long")]
@@ -131,6 +136,21 @@ public class WriteupSection
     // in a disabled state and can be configured before enabling.
 }
 
+public class KoHSection
+{
+    [Range(10, 3600)]
+    public int TickSeconds { get; set; } = 60;
+
+    [Range(1, 1000)]
+    public int RefreshTicks { get; set; } = 5;
+
+    [Range(0.0, 1000.0)]
+    public double HoldPointsPerTick { get; set; } = 1.0;
+}
+
+/// <summary>
+/// Blood bonus configuration
+/// </summary>
 public class BloodBonusSection
 {
     /// <summary>

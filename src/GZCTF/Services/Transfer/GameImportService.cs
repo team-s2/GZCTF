@@ -222,6 +222,13 @@ public class GameImportService(
                 Hidden = true // Import as hidden by default
             };
 
+            if (context.Game.KoH is not null)
+            {
+                game.KoHTickSeconds = context.Game.KoH.TickSeconds;
+                game.KoHRefreshTicks = context.Game.KoH.RefreshTicks;
+                game.KoHHoldPointsPerTick = context.Game.KoH.HoldPointsPerTick;
+            }
+
             // Import blood bonus configuration
             if (context.Game.BloodBonus is not null)
             {
@@ -410,6 +417,7 @@ public class GameImportService(
             CPUCount = transferChallenge.Container?.CpuCount,
             StorageLimit = transferChallenge.Container?.StorageLimit,
             NetworkMode = transferChallenge.Container?.NetworkMode,
+            KoHCheckerImage = transferChallenge.Container?.KoHCheckerImage,
 
             // File settings
             FileName = transferChallenge.Container?.FileName,

@@ -280,14 +280,18 @@ const OneAttachmentWithFlags: FC<FlagEditProps> = ({ onDelete }) => {
           <Button disabled={disabled} onClick={onChangeFlagTemplate}>
             {t('admin.button.challenges.flag.save')}
           </Button>
-        ) : (
+        ) : challenge?.type === ChallengeType.KingOfTheHill ? null : (
           <Button disabled={disabled} w="122px" onClick={() => setFlagCreateModalOpen(true)}>
             {t('admin.button.challenges.flag.add.normal')}
           </Button>
         )}
       </Group>
       <Divider />
-      {challenge?.type === ChallengeType.DynamicContainer ? (
+      {challenge?.type === ChallengeType.KingOfTheHill ? (
+        <Text size="sm" c="dimmed">
+          {t('admin.content.games.challenges.koh_no_flags')}
+        </Text>
+      ) : challenge?.type === ChallengeType.DynamicContainer ? (
         <Stack>
           <TextInput
             label={t('admin.content.games.challenges.flag.template')}

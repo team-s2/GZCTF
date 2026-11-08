@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using GZCTF.Models.Internal;
+using GZCTF.Services.KoH;
 using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Options;
@@ -107,6 +108,7 @@ public class KubernetesProvider : IContainerProvider<Kubernetes, KubernetesMetad
         // create network policies (replace if exists)
         EnsureNetworkPolicy(OpenNetworkPolicy);
         EnsureNetworkPolicy(IsolatedNetworkPolicy);
+        EnsureNetworkPolicy(KoHCheckerNetworkPolicy);
 
         // create auth secrets for registries
         foreach (var registry in registries.Where(registry => registry.Value.Valid))
@@ -129,6 +131,32 @@ public class KubernetesProvider : IContainerProvider<Kubernetes, KubernetesMetad
 
     private const string IsolatedNetworkPolicyName = "gzctf-network-isolated";
     private const string OpenNetworkPolicyName = "gzctf-network-open";
+    private const string KoHCheckerNetworkPolicyName = "gzctf-network-koh-checker";
+
+    /// <summary>
+    /// King of the Hill checker Network Policy
+    /// </summary>
+    /// <remarks>
+    ///  Only allows outbound traffic to pods in the challenge namespace. A checker has to reach
+    ///  the hill, but it also parses responses from a hill controlled by players, so it must not
+    ///  be able to reach anything else in the cluster.
+    /// </remarks>
+    private static readonly V1NetworkPolicy KoHCheckerNetworkPolicy = new()
+    {
+        Metadata = new V1ObjectMeta { Name = KoHCheckerNetworkPolicyName },
+        Spec = new V1NetworkPolicySpec
+        {
+            PodSelector = new V1LabelSelector
+            {
+                MatchLabels = new Dictionary<string, string>
+                {
+                    [KoHRunnerConstants.CheckerRoleLabel] = KoHRunnerConstants.CheckerRole
+                }
+            },
+            PolicyTypes = ["Egress"],
+            Egress = [new V1NetworkPolicyEgressRule { To = [new V1NetworkPolicyPeer { PodSelector = new() }] }]
+        }
+    };
 
     /// <summary>
     /// Isolated Network Policy

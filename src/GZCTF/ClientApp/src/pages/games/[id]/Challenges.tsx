@@ -2,6 +2,7 @@ import { Group, Stack } from '@mantine/core'
 import { FC } from 'react'
 import { ChallengePanel } from '@Components/ChallengePanel'
 import { GameNoticePanel } from '@Components/GameNoticePanel'
+import { KoHGuideButton } from '@Components/KoHGuideModal'
 import { TeamRank } from '@Components/TeamRank'
 import { WithGameTab } from '@Components/WithGameTab'
 import { WithNavBar } from '@Components/WithNavbar'
@@ -16,6 +17,7 @@ const Challenges: FC = () => {
           <Group gap="sm" justify="space-between" align="flex-start" wrap="nowrap">
             <ChallengePanel />
             <Stack gap="sm" miw="22rem" maw="22rem">
+              <KoHGuideButton />
               <TeamRank />
               <GameNoticePanel />
             </Stack>

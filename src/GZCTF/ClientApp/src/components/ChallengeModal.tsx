@@ -95,6 +95,7 @@ export interface ChallengeModalProps extends ModalProps {
   onDestroy: () => void
   onSubmitFlag: () => void
   onDownload?: () => void
+  kohPanel?: React.ReactNode
 }
 
 export const ChallengeModal: FC<ChallengeModalProps> = (props) => {
@@ -113,6 +114,7 @@ export const ChallengeModal: FC<ChallengeModalProps> = (props) => {
     onDestroy,
     onDownload,
     onSubmitFlag,
+    kohPanel,
     ...modalProps
   } = props
   const { t } = useTranslation()
@@ -146,7 +148,7 @@ export const ChallengeModal: FC<ChallengeModalProps> = (props) => {
           </Title>
         </Group>
         <Text miw="6rem" fw="bold" ff="monospace" ta="right">
-          {challenge?.score ?? 0} pts
+          {challenge?.type === ChallengeType.KingOfTheHill ? 'KoH' : `${challenge?.score ?? 0} pts`}
         </Text>
       </Group>
       <Divider size="md" color={cateData?.color} />
@@ -267,28 +269,30 @@ export const ChallengeModal: FC<ChallengeModalProps> = (props) => {
           {deadline}
         </>
       )}
-      <Divider label={attemptsInfo} my={attemptsInfo ? '-0.4rem' : undefined} />
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          if (!solved && canSubmitDespiteDeadline) {
-            onSubmitFlag()
-          }
-        }}
-      >
-        <Group justify="space-between" gap="sm" align="flex-end">
-          <TextInput
-            placeholder={placeholder}
-            value={inputValue}
-            disabled={inputDisabled}
-            onChange={setFlag}
-            classNames={{ root: misc.flexGrow, input: misc.ffmono }}
-          />
-          <Button miw="6rem" type="submit" disabled={inputDisabled}>
-            {t('challenge.button.submit_flag')}
-          </Button>
-        </Group>
-      </form>
+      <Divider label={kohPanel ? undefined : attemptsInfo} my={attemptsInfo && !kohPanel ? '-0.4rem' : undefined} />
+      {kohPanel ?? (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            if (!solved && canSubmitDespiteDeadline) {
+              onSubmitFlag()
+            }
+          }}
+        >
+          <Group justify="space-between" gap="sm" align="flex-end">
+            <TextInput
+              placeholder={placeholder}
+              value={inputValue}
+              disabled={inputDisabled}
+              onChange={setFlag}
+              classNames={{ root: misc.flexGrow, input: misc.ffmono }}
+            />
+            <Button miw="6rem" type="submit" disabled={inputDisabled}>
+              {t('challenge.button.submit_flag')}
+            </Button>
+          </Group>
+        </form>
+      )}
     </Stack>
   )
 

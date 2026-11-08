@@ -76,6 +76,12 @@ public class GameChallengeRepository(
             foreach (var flag in challenge.Flags)
                 await blobRepository.DeleteAttachment(flag.Attachment, token);
 
+        // Removing the challenge cascades to its hill record, the container reaper takes it from there
+        if (challenge.Type.IsKingOfTheHill())
+            await Context.Containers
+                .Where(c => Context.KoHTargets.Any(t => t.ChallengeId == challenge.Id && t.ContainerId == c.Id))
+                .ExecuteUpdateAsync(c => c.SetProperty(x => x.ExpectStopAt, DateTimeOffset.UtcNow), token);
+
         Context.RemoveRange(challenge.Flags);
         Context.Remove(challenge);
 

@@ -46,6 +46,11 @@
   z-index: 20;
 }
 
+/* Separates the columns of one hill from its neighbours and the pinned block */
+.groupStart {
+  border-left: 2px solid var(--mantine-color-default-border);
+}
+
 .text {
   font-size: 0.9em;
   font-weight: 500;
