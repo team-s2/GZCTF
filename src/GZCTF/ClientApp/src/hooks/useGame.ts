@@ -1,8 +1,9 @@
 import dayjs from 'dayjs'
 import { TFunction } from 'i18next'
+import { useMemo } from 'react'
 import { GameStatus } from '@Components/GameCard'
 import { OnceSWRConfig } from '@Hooks/useConfig'
-import api, { ParticipationStatus } from '@Api'
+import api, { ChallengeType, ParticipationStatus } from '@Api'
 
 export const useRecentGames = () => {
   const { data, mutate, error } = api.game.useGameRecentGames(
@@ -75,7 +76,43 @@ export const useGameScoreboard = (numId: number) => {
     refreshInterval: status === GameStatus.OnGoing ? 30 * 1000 : 0,
   })
 
-  return { scoreboard, error, mutate }
+  // Hills live on their own board, the shared payload only carries them for the challenge cards
+  const { jeopardyBoard, hasKoH } = useMemo(() => {
+    if (!scoreboard?.challenges) return { jeopardyBoard: scoreboard, hasKoH: false }
+
+    const entries = Object.entries(scoreboard.challenges)
+    const isJeopardy = (type: ChallengeType) => type !== ChallengeType.KingOfTheHill
+    const challenges = Object.fromEntries(
+      entries
+        .map(([category, items]) => [category, items.filter((item) => isJeopardy(item.type))] as const)
+        .filter(([, items]) => items.length > 0)
+    )
+
+    return {
+      jeopardyBoard: { ...scoreboard, challenges },
+      hasKoH: entries.some(([, items]) => items.some((item) => !isJeopardy(item.type))),
+    }
+  }, [scoreboard])
+
+  return { scoreboard: jeopardyBoard, hasKoH, error, mutate }
+}
+
+export const useKoHScoreboard = (numId: number) => {
+  const { data: scoreboard, error } = api.game.useGameKoHScoreboard(numId, {
+    ...OnceSWRConfig,
+    refreshInterval: 10 * 1000,
+  })
+
+  return { scoreboard, error }
+}
+
+export const useKoHTimeline = (numId: number) => {
+  const { data: timeline, error } = api.game.useGameKoHTimeline(numId, {
+    ...OnceSWRConfig,
+    refreshInterval: 30 * 1000,
+  })
+
+  return { timeline, error }
 }
 
 export const useGameTeamInfo = (numId: number) => {

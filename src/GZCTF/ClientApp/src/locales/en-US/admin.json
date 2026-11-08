@@ -147,6 +147,11 @@
           "title": "Flag Management"
         },
         "hints": "Hints",
+        "koh_checker_image": {
+          "description": "Exit code 0 Ok, 1 Mumble, 2 Offline, others InternalError. Leave empty for a TCP probe.",
+          "label": "Checker image"
+        },
+        "koh_no_flags": "King of the Hill challenges use control tokens instead of flags.",
         "memory_limit": {
           "description": "RAM limitation of containers",
           "label": "Memory Limit (MB)"
@@ -275,6 +280,18 @@
           "description": "Can be overwritten by divisions",
           "label": "Invitation Code",
           "placeholder": "Leave empty to disable"
+        },
+        "koh_hold_points": {
+          "description": "King of the Hill: points the controlling team earns per tick",
+          "label": "KoH points per tick"
+        },
+        "koh_refresh_ticks": {
+          "description": "King of the Hill: ticks before hills reset to their base image and tokens rotate",
+          "label": "KoH hill reset (ticks)"
+        },
+        "koh_tick_seconds": {
+          "description": "King of the Hill: how often hills are scored",
+          "label": "KoH tick length (seconds)"
         },
         "member_limit": {
           "description": "0 means unlimited members of team",

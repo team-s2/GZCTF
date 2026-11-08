@@ -36,7 +36,10 @@ public class ContainerRepository(
         .ToArray();
 
     public Task<Container[]> GetDyingContainers(CancellationToken token = default) =>
-        Context.Containers.Where(c => c.ExpectStopAt < DateTimeOffset.UtcNow).ToArrayAsync(token);
+        Context.Containers
+            // Hills are owned by the KoH engine, game extensions must not get them reaped
+            .Where(c => c.ExpectStopAt < DateTimeOffset.UtcNow && !Context.KoHTargets.Any(t => t.ContainerId == c.Id))
+            .ToArrayAsync(token);
 
     public Task ExtendLifetime(Container container, TimeSpan time, CancellationToken token = default)
     {

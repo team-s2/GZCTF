@@ -34,6 +34,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) :
     public DbSet<Participation> Participations { get; set; } = null!;
     public DbSet<GameInstance> GameInstances { get; set; } = null!;
     public DbSet<GameChallenge> GameChallenges { get; set; } = null!;
+    public DbSet<KoHRound> KoHRounds { get; set; } = null!;
+    public DbSet<KoHTarget> KoHTargets { get; set; } = null!;
+    public DbSet<KoHToken> KoHTokens { get; set; } = null!;
+    public DbSet<KoHControlResult> KoHControlResults { get; set; } = null!;
     public DbSet<FirstSolve> FirstSolves { get; set; } = null!;
     public DbSet<ExerciseInstance> ExerciseInstances { get; set; } = null!;
     public DbSet<ExerciseChallenge> ExerciseChallenges { get; set; } = null!;
@@ -246,6 +250,25 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) :
             entity.HasOne(e => e.ExerciseInstance)
                 .WithOne(e => e.Container)
                 .HasForeignKey<ExerciseInstance>(e => e.ContainerId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        builder.Entity<KoHTarget>(entity =>
+        {
+            // A null ContainerId makes the engine relaunch the hill
+            entity.HasOne(e => e.Container)
+                .WithMany()
+                .HasForeignKey(e => e.ContainerId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        builder.Entity<KoHControlResult>(entity =>
+        {
+            entity.Property(e => e.Status).HasConversion<byte>();
+
+            entity.HasOne(e => e.ControllingParticipation)
+                .WithMany()
+                .HasForeignKey(e => e.ControllingParticipationId)
                 .OnDelete(DeleteBehavior.SetNull);
         });
 

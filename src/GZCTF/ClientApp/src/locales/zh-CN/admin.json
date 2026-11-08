@@ -147,6 +147,11 @@
           "title": "flag 管理"
         },
         "hints": "题目提示",
+        "koh_checker_image": {
+          "description": "退出码 0 正常，1 Mumble，2 Offline，其他为内部错误。留空则使用 TCP 探测。",
+          "label": "检查器镜像"
+        },
+        "koh_no_flags": "山丘之王题目使用控制令牌，而不是 flag。",
         "memory_limit": {
           "description": "限制容器使用的 RAM",
           "label": "内存限制 (MB)"
@@ -275,6 +280,18 @@
           "description": "可被分组覆盖",
           "label": "邀请码",
           "placeholder": "留空以禁用"
+        },
+        "koh_hold_points": {
+          "description": "山丘之王：占领队伍每个 tick 获得的分数",
+          "label": "KoH 每 tick 得分"
+        },
+        "koh_refresh_ticks": {
+          "description": "山丘之王：山丘重置为基础镜像、令牌轮换的间隔",
+          "label": "KoH 山丘重置（tick）"
+        },
+        "koh_tick_seconds": {
+          "description": "山丘之王：山丘的计分间隔",
+          "label": "KoH tick 时长（秒）"
         },
         "member_limit": {
           "description": "0 表示不限制队伍人数",

@@ -91,6 +91,27 @@ public partial class Game
     public int ContainerCountLimit { get; set; } = 3;
 
     /// <summary>
+    /// King of the Hill: length of a tick in seconds
+    /// </summary>
+    [Required]
+    [Range(10, 3600)]
+    public int KoHTickSeconds { get; set; } = 60;
+
+    /// <summary>
+    /// King of the Hill: ticks between hill resets, which is also the token rotation period
+    /// </summary>
+    [Required]
+    [Range(1, 1000)]
+    public int KoHRefreshTicks { get; set; } = 5;
+
+    /// <summary>
+    /// King of the Hill: points the controlling team earns per tick
+    /// </summary>
+    [Required]
+    [Range(0.0, 1000.0)]
+    public double KoHHoldPointsPerTick { get; set; } = 1.0;
+
+    /// <summary>
     /// Start time
     /// </summary>
     [Required]
@@ -201,6 +222,9 @@ public partial class Game
         WriteupRequired = model.WriteupRequired;
         WriteupDeadline = model.WriteupDeadline;
         BloodBonus = BloodBonus.FromValue(model.BloodBonusValue);
+        KoHTickSeconds = model.KoHTickSeconds;
+        KoHRefreshTicks = model.KoHRefreshTicks;
+        KoHHoldPointsPerTick = model.KoHHoldPointsPerTick;
 
         return this;
     }

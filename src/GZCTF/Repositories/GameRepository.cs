@@ -355,7 +355,9 @@ public class GameRepository(
                         Id = c.Id,
                         Title = c.Title,
                         Category = c.Category,
-                        Score = c.OriginalScore,
+                        Type = c.Type,
+                        // A hill has no static score to show
+                        Score = c.Type == ChallengeType.KingOfTheHill ? 0 : c.OriginalScore,
                         SolvedCount = 0,
                         DeadlineUtc = c.DeadlineUtc,
                         DisableBloodBonus = c.DisableBloodBonus
@@ -442,6 +444,9 @@ public class GameRepository(
             var meta = challengeMetas[challengeId];
             var solvedCount = challengeAcceptedCounts.GetValueOrDefault(challengeId);
             info.SolvedCount = solvedCount;
+            if (info.Type == ChallengeType.KingOfTheHill)
+                continue;
+
             info.Score = GameChallenge.CalculateChallengeScore(meta.OriginalScore,
                 meta.MinScoreRate, meta.Difficulty, solvedCount);
         }

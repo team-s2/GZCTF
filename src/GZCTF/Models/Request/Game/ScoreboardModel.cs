@@ -365,6 +365,12 @@ public partial class ChallengeInfo
     [NotMapped]
     [MemoryPackIgnore]
     public bool DisableBloodBonus { get; set; }
+
+    /// <summary>
+    /// Challenge type
+    /// </summary>
+    [Required]
+    public ChallengeType Type { get; set; }
 }
 
 [MemoryPackable]

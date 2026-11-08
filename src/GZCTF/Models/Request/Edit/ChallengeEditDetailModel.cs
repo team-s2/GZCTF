@@ -91,6 +91,11 @@ public class ChallengeEditDetailModel
     public string? ContainerImage { get; set; } = string.Empty;
 
     /// <summary>
+    /// King of the Hill: functional checker image, empty uses the built-in TCP probe
+    /// </summary>
+    public string? KoHCheckerImage { get; set; }
+
+    /// <summary>
     /// Memory limit (MB)
     /// </summary>
     public int? MemoryLimit { get; set; } = 64;
@@ -172,6 +177,7 @@ public class ChallengeEditDetailModel
             StorageLimit = chal.StorageLimit,
             ExposePort = chal.ExposePort,
             NetworkMode = chal.NetworkMode,
+            KoHCheckerImage = chal.KoHCheckerImage,
             EnableTrafficCapture = chal.EnableTrafficCapture,
             DisableBloodBonus = chal.DisableBloodBonus,
             OriginalScore = chal.OriginalScore,

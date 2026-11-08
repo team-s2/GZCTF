@@ -7,6 +7,11 @@ namespace GZCTF.Models.Data;
 public class GameChallenge : Challenge
 {
     /// <summary>
+    /// King of the Hill: functional checker image, empty uses the built-in TCP probe
+    /// </summary>
+    public string? KoHCheckerImage { get; set; }
+
+    /// <summary>
     /// Whether to record traffic
     /// </summary>
     public bool EnableTrafficCapture { get; set; }
@@ -69,6 +74,7 @@ public class GameChallenge : Challenge
         ContainerImage = model.ContainerImage?.Trim() ?? ContainerImage;
         ExposePort = model.ExposePort ?? ExposePort;
         NetworkMode = model.NetworkMode ?? NetworkMode;
+        KoHCheckerImage = model.KoHCheckerImage is null ? KoHCheckerImage : model.KoHCheckerImage.Trim();
         OriginalScore = model.OriginalScore ?? OriginalScore;
         MinScoreRate = model.MinScoreRate ?? MinScoreRate;
         Difficulty = model.Difficulty ?? Difficulty;

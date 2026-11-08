@@ -88,6 +88,13 @@ export const useChallengeTypeLabelMap = () => {
         desrc: t('challenge.type.dynamic_container.desrc'),
       },
     ],
+    [
+      ChallengeType.KingOfTheHill,
+      {
+        name: t('challenge.type.king_of_the_hill.label'),
+        desrc: t('challenge.type.king_of_the_hill.desrc'),
+      },
+    ],
   ])
 }
 

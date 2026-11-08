@@ -96,6 +96,11 @@ public class ChallengeUpdateModel
     public NetworkMode? NetworkMode { get; set; }
 
     /// <summary>
+    /// King of the Hill: functional checker image, empty uses the built-in TCP probe
+    /// </summary>
+    public string? KoHCheckerImage { get; set; }
+
+    /// <summary>
     /// Is traffic capture enabled (disabled by default)
     /// </summary>
     public bool? EnableTrafficCapture { get; set; }

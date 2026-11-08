@@ -684,7 +684,8 @@ public class EditController(
                 StatusCodes.Status404NotFound));
 
         // NOTE: IsEnabled can only be updated outside the edit page
-        if (model.IsEnabled is true && !res.IsEnabled && res.Type != ChallengeType.DynamicContainer)
+        if (model.IsEnabled is true && !res.IsEnabled && res.Type != ChallengeType.DynamicContainer &&
+            !res.Type.IsKingOfTheHill())
         {
             await challengeRepository.LoadFlags(res, token);
 

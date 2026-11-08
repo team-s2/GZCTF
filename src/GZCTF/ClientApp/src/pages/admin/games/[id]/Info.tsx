@@ -266,6 +266,46 @@ const GameInfoEdit: FC = () => {
             setGame({ ...game, containerCountLimit: number })
           }}
         />
+        <NumberInput
+          label={t('admin.content.games.info.koh_tick_seconds.label')}
+          description={t('admin.content.games.info.koh_tick_seconds.description')}
+          disabled={disabled}
+          min={10}
+          max={3600}
+          value={game?.koHTickSeconds ?? 60}
+          onChange={(e) => {
+            const number = getInputNumber(e)
+            if (!game || isNaN(number)) return
+            setGame({ ...game, koHTickSeconds: number })
+          }}
+        />
+        <NumberInput
+          label={t('admin.content.games.info.koh_refresh_ticks.label')}
+          description={t('admin.content.games.info.koh_refresh_ticks.description')}
+          disabled={disabled}
+          min={1}
+          max={1000}
+          value={game?.koHRefreshTicks ?? 5}
+          onChange={(e) => {
+            const number = getInputNumber(e)
+            if (!game || isNaN(number)) return
+            setGame({ ...game, koHRefreshTicks: number })
+          }}
+        />
+        <NumberInput
+          label={t('admin.content.games.info.koh_hold_points.label')}
+          description={t('admin.content.games.info.koh_hold_points.description')}
+          disabled={disabled}
+          min={0}
+          max={1000}
+          decimalScale={2}
+          value={game?.koHHoldPointsPerTick ?? 1}
+          onChange={(e) => {
+            const number = getInputNumber(e)
+            if (!game || isNaN(number)) return
+            setGame({ ...game, koHHoldPointsPerTick: number })
+          }}
+        />
         <TextInput
           label={t('admin.content.games.info.invite_code.label')}
           description={t('admin.content.games.info.invite_code.description')}

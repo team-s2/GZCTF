@@ -135,7 +135,7 @@ public class ExcelHelper(IStringLocalizer<Program> localizer)
         }
 
         foreach (var type in scoreboard.Challenges)
-            foreach (var chall in type.Value)
+            foreach (var chall in type.Value.Where(c => !c.Type.IsKingOfTheHill()))
             {
                 var cell = row.CreateCell(colIndex++);
                 cell.SetCellValue(chall.Title);

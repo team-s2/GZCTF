@@ -217,6 +217,11 @@ public static class CacheKey
     public const string CronJobLock = "_CronJobLock";
 
     /// <summary>
+    /// The King of the Hill engine leader lock
+    /// </summary>
+    public const string KoHEngineLock = "_KoHEngineLock";
+
+    /// <summary>
     /// Is exercise available
     /// </summary>
     public const string ExerciseAvailable = "_ExerciseAvailable";
@@ -255,6 +260,16 @@ public static class CacheKey
     /// Game cache
     /// </summary>
     public static string GameCache(int id) => $"_GameCache_{id}";
+
+    /// <summary>
+    /// King of the Hill scoreboard
+    /// </summary>
+    public static string KoHScoreboard(int id) => $"_KoHScoreboard_{id}";
+
+    /// <summary>
+    /// King of the Hill score timeline
+    /// </summary>
+    public static string KoHTimeline(int id) => $"_KoHTimeline_{id}";
 
     /// <summary>
     /// Game notice cache

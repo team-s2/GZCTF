@@ -182,6 +182,10 @@
       "desrc": "自动生成下发 flag，每队均唯一",
       "label": "动态容器"
     },
+    "king_of_the_hill": {
+      "desrc": "所有队伍共享一个容器，将自己的令牌写入 /koh/king 占领山丘，每个 tick 得分",
+      "label": "山丘之王"
+    },
     "static_attachment": {
       "desrc": "共用附件，任意 flag 均可提交",
       "label": "静态附件"

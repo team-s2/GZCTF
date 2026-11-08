@@ -57,6 +57,71 @@
       "title": "Registration Information"
     },
     "joined_status": "<strong>{{count}}</strong> teams have already joined",
+    "koh": {
+      "all_divisions": "All divisions",
+      "board_jeopardy": "Jeopardy",
+      "board_koh": "King of the Hill",
+      "cell_detail": "+{{earned}} / -{{penalty}} over {{ticks}} held ticks",
+      "copied": "Copied",
+      "copy_target": "Copy hill address",
+      "copy_token": "Copy token, write it into /koh/king on any hill",
+      "guide": {
+        "copy": "Copy",
+        "hill": {
+          "check": "The table above and this call show who the platform recorded as holder in the last scored tick.",
+          "cookie": "Use the token above, or fetch it from a script. Scripts sign in with your GZCTF_Token browser cookie, which you can copy from the developer tools. It is your login session, so keep it private.",
+          "entry": "entry is host:port, or a container id when the platform proxy is enabled. For a container id, the panel in the challenge shows the full WebSocket address.",
+          "plant": "Exploit the hill however its vulnerability allows, then write the exact token into /koh/king. Surrounding whitespace is ignored.",
+          "step_check": "3. Confirm you hold it",
+          "step_plant": "2. Write it to the marker",
+          "step_token": "1. Get your token",
+          "title": "Take a hill"
+        },
+        "holder": "Holder",
+        "intro": "Every team attacks the same container, the hill. Write your team's token into /koh/king on a hill to take it, and keep the service working to score each tick.",
+        "open": "King of the Hill guide",
+        "refresh": {
+          "entry": "A reset launches a new container, so the address of the hill can change. Fetch it again after each reset.",
+          "title": "Resets",
+          "token": "Your token rotates at the same moment. A token from an earlier window no longer counts.",
+          "wipe": "Every {{ticks}} ticks each hill is reset to its base image. Footholds, patches and the marker are all wiped."
+        },
+        "scoring": {
+          "board": "King of the Hill points are shown on their own scoreboard tab and are not added to the jeopardy score.",
+          "check": "Once per tick, at a random moment in roughly the first half of the tick, the platform reads /koh/king and checks that the service works.",
+          "fault": "A checker or platform fault (InternalError) never gives or takes points.",
+          "grace": "If you did not hold the hill in either of the two previous ticks, you are not penalized for a broken hill.",
+          "hold": "If your token is there and the service is healthy, your team earns the game's points per tick.",
+          "penalty": "If your token is there and the service is broken (Mumble or Offline), your team loses 1 point for that tick.",
+          "title": "How scoring works"
+        },
+        "status": "Status",
+        "tips": {
+          "keep": "Keep your token in place for the whole tick. Other teams can overwrite it at any time, and you cannot predict when the check runs.",
+          "replay": "A token copied from /koh/king scores for the team it belongs to, not for whoever wrote it.",
+          "script": "Script the whole loop of fetching the token, exploiting and writing the marker, so you are back on the hill quickly after a reset.",
+          "service": "Keep the service running. Breaking the hill you hold costs you points every tick.",
+          "title": "Tips"
+        },
+        "title": "King of the Hill guide"
+      },
+      "hill": "The hill",
+      "hint": "Exploit the hill and write your token into /koh/king. The same token works on every hill and rotates when the hills reset.",
+      "holder": "Holder: {{team}}",
+      "last_refresh": "last reset: round {{round}}",
+      "no_checks": "No checks yet",
+      "no_hill": "The hill is not running yet.",
+      "no_token": "No token for this window, your team was accepted after it started. It will be issued at the next reset.",
+      "rank": "Rank",
+      "refresh_every": "hills reset every {{ticks}} ticks",
+      "round": "Round {{round}}",
+      "target": "Target",
+      "team": "Team",
+      "total": "Total",
+      "warmup": "Waiting for the first tick",
+      "you_hold": "You hold it",
+      "your_token": "Your token"
+    },
     "leave": {
       "confirm": "Confirm quitting",
       "content": [

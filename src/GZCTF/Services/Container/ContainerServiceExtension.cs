@@ -2,6 +2,7 @@
 using GZCTF.Models.Internal;
 using GZCTF.Services.Container.Manager;
 using GZCTF.Services.Container.Provider;
+using GZCTF.Services.KoH;
 using k8s;
 
 namespace GZCTF.Services.Container;
@@ -50,8 +51,10 @@ public static class ContainerServiceExtension
         private IServiceCollection AddManager(ContainerProvider config)
             => config.Type switch
             {
-                ContainerProviderType.Kubernetes => services.AddSingleton<IContainerManager, KubernetesManager>(),
+                ContainerProviderType.Kubernetes => services.AddSingleton<IContainerManager, KubernetesManager>()
+                    .AddSingleton<IKoHRunner, KubernetesKoHRunner>(),
                 _ => services.AddSingleton<IContainerManager, DockerManager>()
+                    .AddSingleton<IKoHRunner, DockerKoHRunner>()
             };
     }
 }
